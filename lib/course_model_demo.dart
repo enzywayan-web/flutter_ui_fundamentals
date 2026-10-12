@@ -1,10 +1,10 @@
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'models/course.dart';
+import 'services/course_service.dart';
 
 class CourseModelDemo extends StatefulWidget {
   const CourseModelDemo({super.key});
@@ -14,6 +14,8 @@ class CourseModelDemo extends StatefulWidget {
 }
 
 class _CourseModelDemoState extends State<CourseModelDemo> {
+  final CourseService courseService = CourseService();
+
   late Future<List<Course>> coursesFuture;
 
   @override
