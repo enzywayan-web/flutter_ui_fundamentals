@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'favorites_page.dart';
 
 const String studentName = 'Ni Wayan Enzy Ariantini';
 const String studentId = '2415051070';
@@ -26,6 +27,10 @@ class CourseExplorerApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
+      routes: {
+        '/favorites-experiment': (context) =>
+            const FavoritesPage(),
+      },
       home: const ResponsiveShell(),
     );
   }
@@ -82,7 +87,8 @@ class ResponsiveShell extends StatefulWidget {
   const ResponsiveShell({super.key});
 
   @override
-  State<ResponsiveShell> createState() => _ResponsiveShellState();
+  State<ResponsiveShell> createState() =>
+      _ResponsiveShellState();
 }
 
 class _ResponsiveShellState extends State<ResponsiveShell> {
@@ -212,7 +218,9 @@ class IdentityCard extends StatelessWidget {
                     style: Theme.of(context)
                         .textTheme
                         .titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                        ?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text('NIM: $studentId'),
@@ -229,7 +237,7 @@ class IdentityCard extends StatelessWidget {
 }
 
 // =====================================================
-// HOME PAGE - LOCAL STATE
+// HOME PAGE - LOCAL STATE + PROP DRILLING
 // =====================================================
 
 class HomePage extends StatefulWidget {
@@ -240,7 +248,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // LOCAL STATE: hanya digunakan pada halaman Home.
   bool showDetail = false;
 
   @override
@@ -260,14 +267,12 @@ class _HomePageState extends State<HomePage> {
                 .headlineSmall
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
-
           const SizedBox(height: 8),
 
           const Text(
             'Course Explorer digunakan untuk melihat daftar course '
             'dan informasi pembelajaran secara responsif.',
           ),
-
           const SizedBox(height: 20),
 
           Card(
@@ -287,18 +292,17 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 8),
                   const Text(
-                    'Tampilan akan menyesuaikan ukuran layar. '
-                    'Pada layar kecil menggunakan NavigationBar, '
+                    'Tampilan menyesuaikan ukuran layar. '
+                    'Layar kecil menggunakan NavigationBar, '
                     'sedangkan layar lebar menggunakan NavigationRail.',
                   ),
                 ],
               ),
             ),
           ),
-
           const SizedBox(height: 20),
 
-          // TOMBOL UNTUK MENGUBAH LOCAL STATE
+          // LOCAL STATE
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -318,6 +322,7 @@ class _HomePageState extends State<HomePage> {
                     'menyembunyikan detail.',
                   ),
                   const SizedBox(height: 8),
+
                   FilledButton.icon(
                     onPressed: () {
                       setState(() {
@@ -335,6 +340,7 @@ class _HomePageState extends State<HomePage> {
                           : 'Lihat Detail',
                     ),
                   ),
+
                   if (showDetail) ...[
                     const SizedBox(height: 12),
                     const Divider(),
@@ -346,7 +352,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 6),
                     const Text(
-                      'Aplikasi ini menampilkan daftar mata kuliah, '
+                      'Aplikasi menampilkan daftar mata kuliah, '
                       'informasi course, status favorit, dan profil '
                       'mahasiswa. Nilai showDetail hanya mengatur '
                       'tampilan detail pada halaman Home.',
@@ -356,9 +362,25 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          const SizedBox(height: 16),
 
-          const SizedBox(height: 20),
+          // TOMBOL EKSPERIMEN TAHAP 2
+          SizedBox(
+            width: double.infinity,
+            child: FilledButton.icon(
+              onPressed: () {
+                Navigator.pushNamed(
+                  context,
+                  '/favorites-experiment',
+                );
+              },
+              icon: const Icon(Icons.favorite),
+              label: const Text('Eksperimen Prop Drilling'),
+            ),
+          ),
+          const SizedBox(height: 12),
 
+          // ABOUT PAGE
           FilledButton.icon(
             onPressed: () {
               Navigator.push(
@@ -656,7 +678,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-
     namaController = TextEditingController(text: studentName);
     nimController = TextEditingController(text: studentId);
   }
@@ -692,7 +713,6 @@ class _ProfilePageState extends State<ProfilePage> {
             FilledButton(
               onPressed: () {
                 Navigator.pop(context);
-
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Feedback berhasil disimpan'),
@@ -768,11 +788,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Komentar wajib diisi';
                     }
-
                     if (value.trim().length < 5) {
                       return 'Komentar minimal 5 karakter';
                     }
-
                     return null;
                   },
                 ),
