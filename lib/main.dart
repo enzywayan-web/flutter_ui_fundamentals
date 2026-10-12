@@ -1,6 +1,7 @@
 import 'favorites_page.dart';
 import 'value_notifier_demo.dart';
 import 'course_state_demo.dart';
+import 'course_provider_demo.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'course_provider.dart';
@@ -343,10 +344,12 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 12),
                   
-                  // Eksperimen ValueNotifier Tahap 4 & CourseStateDemo
+                  // Eksperimen ValueNotifier, CourseState, dan CourseProvider Demo
                   const ValueNotifierDemoCard(),
                   const SizedBox(height: 16),
                   const CourseStateDemo(),
+                  const SizedBox(height: 16),
+                  const CourseProviderDemo(),
                   const SizedBox(height: 16),
 
                   FilledButton.icon(
