@@ -1,7 +1,8 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'course_provider.dart';
-import 'models/course.dart';
+
+import 'providers/course_provider.dart';
 
 class CourseProviderDemo extends StatelessWidget {
   const CourseProviderDemo({super.key});
@@ -21,59 +22,46 @@ class CourseProviderDemo extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
             ),
-            const SizedBox(height: 8),
-
-            // watch digunakan untuk mendengarkan jumlah favorit.
-            const FavoriteCount(),
-
-            const Divider(),
-
-            // Memuat dan menampilkan data course dari repository melalui provider
+            const SizedBox(height: 12),
             ElevatedButton(
               onPressed: () {
                 context.read<CourseProvider>().loadCourses();
               },
-              child: const Text('Muat Course dari Repository'),
+              child: const Text('Muat Data Mata Kuliah'),
             ),
-            const SizedBox(height: 8),
-
+            const SizedBox(height: 12),
             Consumer<CourseProvider>(
               builder: (context, provider, child) {
-                final courses = provider.courses;
+                if (provider.isLoading) {
+                  return const CircularProgressIndicator();
+                }
 
-                if (courses.isEmpty) {
-                  return const Text('Belum ada course yang dimuat.');
+                if (provider.error != null) {
+                  return Text('Terjadi kesalahan: ${provider.error}');
+                }
+
+                if (provider.courses.isEmpty) {
+                  return const Text(
+                    'Tekan tombol untuk memuat data mata kuliah.',
+                  );
                 }
 
                 return Column(
-                  children: courses.map((course) {
-                    final String courseName = course.title;
-                    final isFavorite =
-                        provider.favorites.contains(courseName);
-
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: provider.courses.map((course) {
                     return ListTile(
-                      title: Text(courseName),
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(course.title),
                       subtitle: Text(
-                        'Kode: ${course.code} | SKS: ${course.credits}',
+                        '${course.code} • ${course.credits} SKS',
                       ),
-                      // Consumer membatasi pembaruan pada ikon favorit.
-                      trailing: Icon(
-                        isFavorite
-                            ? Icons.favorite
-                            : Icons.favorite_border,
-                        color: isFavorite ? Colors.red : Colors.grey,
-                      ),
-                      // read digunakan untuk menjalankan aksi.
-                      onTap: () {
-                        context
-                            .read<CourseProvider>()
-                            .toggleFavorite(courseName);
-                      },
                     );
                   }).toList(),
                 );
               },
             ),
+            const Divider(),
+            const FavoriteCount(),
           ],
         ),
       ),
@@ -86,10 +74,8 @@ class FavoriteCount extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<CourseProvider>();
+    final count = context.watch<CourseProvider>().favorites.length;
 
-    return Text(
-      'Jumlah favorit: ${provider.favorites.length}',
-    );
+    return Text('Jumlah mata kuliah favorit: $count');
   }
 }

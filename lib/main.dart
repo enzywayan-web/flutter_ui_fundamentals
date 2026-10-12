@@ -1,3 +1,4 @@
+
 import 'favorites_page.dart';
 import 'value_notifier_demo.dart';
 import 'course_state_demo.dart';
@@ -5,7 +6,7 @@ import 'course_provider_demo.dart';
 import 'course_model_demo.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'course_provider.dart';
+import 'providers/course_provider.dart' as app_provider;
 
 const String studentName = 'Ni Wayan Enzy Ariantini';
 const String studentId = '2415051070';
@@ -13,7 +14,7 @@ const String studentId = '2415051070';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => CourseProvider(),
+      create: (_) => app_provider.CourseProvider(),
       child: const CourseExplorerApp(),
     ),
   );
