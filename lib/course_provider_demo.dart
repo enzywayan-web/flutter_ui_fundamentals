@@ -1,16 +1,10 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'course_provider.dart';
+import 'models/course.dart';
 
 class CourseProviderDemo extends StatelessWidget {
   const CourseProviderDemo({super.key});
-
-  static const List<String> courses = [
-    'Flutter',
-    'Dart',
-    'UI Design',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -34,33 +28,52 @@ class CourseProviderDemo extends StatelessWidget {
 
             const Divider(),
 
-            ...courses.map((course) {
-              return ListTile(
-                title: Text(course),
+            // Memuat dan menampilkan data course dari repository melalui provider
+            ElevatedButton(
+              onPressed: () {
+                context.read<CourseProvider>().loadCourses();
+              },
+              child: const Text('Muat Course dari Repository'),
+            ),
+            const SizedBox(height: 8),
 
-                // Consumer membatasi pembaruan pada ikon favorit.
-                trailing: Consumer<CourseProvider>(
-                  builder: (context, provider, child) {
+            Consumer<CourseProvider>(
+              builder: (context, provider, child) {
+                final courses = provider.courses;
+
+                if (courses.isEmpty) {
+                  return const Text('Belum ada course yang dimuat.');
+                }
+
+                return Column(
+                  children: courses.map((course) {
+                    final String courseName = course.title;
                     final isFavorite =
-                        provider.favorites.contains(course);
+                        provider.favorites.contains(courseName);
 
-                    return Icon(
-                      isFavorite
-                          ? Icons.favorite
-                          : Icons.favorite_border,
-                      color: isFavorite ? Colors.red : Colors.grey,
+                    return ListTile(
+                      title: Text(courseName),
+                      subtitle: Text(
+                        'Kode: ${course.code} | SKS: ${course.credits}',
+                      ),
+                      // Consumer membatasi pembaruan pada ikon favorit.
+                      trailing: Icon(
+                        isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: isFavorite ? Colors.red : Colors.grey,
+                      ),
+                      // read digunakan untuk menjalankan aksi.
+                      onTap: () {
+                        context
+                            .read<CourseProvider>()
+                            .toggleFavorite(courseName);
+                      },
                     );
-                  },
-                ),
-
-                // read digunakan untuk menjalankan aksi.
-                onTap: () {
-                  context
-                      .read<CourseProvider>()
-                      .toggleFavorite(course);
-                },
-              );
-            }),
+                  }).toList(),
+                );
+              },
+            ),
           ],
         ),
       ),
