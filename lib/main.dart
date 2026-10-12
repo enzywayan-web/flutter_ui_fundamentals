@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 const String studentName = 'Ni Wayan Enzy Ariantini';
@@ -208,16 +209,15 @@ class IdentityCard extends StatelessWidget {
                 children: [
                   Text(
                     studentName,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
                   Text('NIM: $studentId'),
                   const SizedBox(height: 4),
-                  const Text(
-                    'Pendidikan Teknik Informatika',
-                  ),
+                  const Text('Pendidikan Teknik Informatika'),
                 ],
               ),
             ),
@@ -229,11 +229,19 @@ class IdentityCard extends StatelessWidget {
 }
 
 // =====================================================
-// HOME PAGE
+// HOME PAGE - LOCAL STATE
 // =====================================================
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  // LOCAL STATE: hanya digunakan pada halaman Home.
+  bool showDetail = false;
 
   @override
   Widget build(BuildContext context) {
@@ -247,9 +255,10 @@ class HomePage extends StatelessWidget {
 
           Text(
             'Selamat Datang 👋',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
 
           const SizedBox(height: 8),
@@ -267,16 +276,14 @@ class HomePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(
-                    Icons.devices,
-                    size: 42,
-                  ),
+                  const Icon(Icons.devices, size: 42),
                   const SizedBox(height: 12),
                   Text(
                     'Responsive Layout',
-                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
                   const Text(
@@ -284,6 +291,67 @@ class HomePage extends StatelessWidget {
                     'Pada layar kecil menggunakan NavigationBar, '
                     'sedangkan layar lebar menggunakan NavigationRail.',
                   ),
+                ],
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 20),
+
+          // TOMBOL UNTUK MENGUBAH LOCAL STATE
+          Card(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Contoh Local State',
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'Tekan tombol untuk menampilkan atau '
+                    'menyembunyikan detail.',
+                  ),
+                  const SizedBox(height: 8),
+                  FilledButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        showDetail = !showDetail;
+                      });
+                    },
+                    icon: Icon(
+                      showDetail
+                          ? Icons.visibility_off
+                          : Icons.visibility,
+                    ),
+                    label: Text(
+                      showDetail
+                          ? 'Sembunyikan Detail'
+                          : 'Lihat Detail',
+                    ),
+                  ),
+                  if (showDetail) ...[
+                    const SizedBox(height: 12),
+                    const Divider(),
+                    const Text(
+                      'Detail Course Explorer',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    const Text(
+                      'Aplikasi ini menampilkan daftar mata kuliah, '
+                      'informasi course, status favorit, dan profil '
+                      'mahasiswa. Nilai showDetail hanya mengatur '
+                      'tampilan detail pada halaman Home.',
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -375,7 +443,8 @@ class _CoursesPageState extends State<CoursesPage> {
           );
         }
 
-        final int columnCount = constraints.maxWidth >= 840 ? 3 : 2;
+        final int columnCount =
+            constraints.maxWidth >= 840 ? 3 : 2;
 
         return GridView.builder(
           padding: const EdgeInsets.all(16),
@@ -466,20 +535,17 @@ class CourseCard extends StatelessWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 8),
-
               Text(
                 course['name'].toString(),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
-
               const SizedBox(height: 6),
-
               Text('Kode: ${course['code']}'),
               Text('SKS: ${course['sks']}'),
               Text('Status: ${course['status']}'),
@@ -516,31 +582,22 @@ class CourseDetailPage extends StatelessWidget {
           children: [
             const IdentityCard(),
             const SizedBox(height: 20),
-
             Card(
               child: Padding(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Icon(
-                      Icons.menu_book,
-                      size: 50,
-                    ),
+                    const Icon(Icons.menu_book, size: 50),
                     const SizedBox(height: 16),
-
                     Text(
                       course['name'].toString(),
                       style: Theme.of(context)
                           .textTheme
                           .headlineSmall
-                          ?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          ?.copyWith(fontWeight: FontWeight.bold),
                     ),
-
                     const SizedBox(height: 16),
-
                     Text('Kode Course: ${course['code']}'),
                     const SizedBox(height: 8),
                     Text('Jumlah SKS: ${course['sks']}'),
@@ -550,9 +607,7 @@ class CourseDetailPage extends StatelessWidget {
                 ),
               ),
             ),
-
             const SizedBox(height: 20),
-
             FilledButton.icon(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -564,9 +619,7 @@ class CourseDetailPage extends StatelessWidget {
               icon: const Icon(Icons.check),
               label: const Text('Pilih Course'),
             ),
-
             const SizedBox(height: 8),
-
             OutlinedButton.icon(
               onPressed: () {
                 Navigator.pop(context);
@@ -604,13 +657,8 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
 
-    namaController = TextEditingController(
-      text: studentName,
-    );
-
-    nimController = TextEditingController(
-      text: studentId,
-    );
+    namaController = TextEditingController(text: studentName);
+    nimController = TextEditingController(text: studentId);
   }
 
   @override
@@ -667,18 +715,15 @@ class _ProfilePageState extends State<ProfilePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const IdentityCard(),
-
           const SizedBox(height: 20),
-
           Text(
             'Feedback',
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(fontWeight: FontWeight.bold),
           ),
-
           const SizedBox(height: 12),
-
           Form(
             key: formKey,
             child: Column(
@@ -696,9 +741,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 12),
-
                 TextFormField(
                   controller: nimController,
                   decoration: const InputDecoration(
@@ -712,9 +755,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 12),
-
                 TextFormField(
                   controller: komentarController,
                   maxLines: 4,
@@ -735,9 +776,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     return null;
                   },
                 ),
-
                 const SizedBox(height: 16),
-
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
@@ -779,10 +818,7 @@ class AboutPage extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    Icon(
-                      Icons.devices,
-                      size: 60,
-                    ),
+                    Icon(Icons.devices, size: 60),
                     SizedBox(height: 16),
                     Text(
                       'Responsive Course Explorer',
