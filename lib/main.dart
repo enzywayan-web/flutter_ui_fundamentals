@@ -1,12 +1,20 @@
 import 'favorites_page.dart';
 import 'value_notifier_demo.dart';
+import 'course_state_demo.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'course_provider.dart';
 
 const String studentName = 'Ni Wayan Enzy Ariantini';
 const String studentId = '2415051070';
 
 void main() {
-  runApp(const CourseExplorerApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => CourseProvider(),
+      child: const CourseExplorerApp(),
+    ),
+  );
 }
 
 // =====================================================
@@ -335,8 +343,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const SizedBox(height: 12),
                   
-                  // Eksperimen ValueNotifier Tahap 4
+                  // Eksperimen ValueNotifier Tahap 4 & CourseStateDemo
                   const ValueNotifierDemoCard(),
+                  const SizedBox(height: 16),
+                  const CourseStateDemo(),
                   const SizedBox(height: 16),
 
                   FilledButton.icon(
