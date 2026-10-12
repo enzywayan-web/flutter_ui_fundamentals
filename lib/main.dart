@@ -1,4 +1,5 @@
 import 'favorites_page.dart';
+import 'value_notifier_demo.dart';
 import 'package:flutter/material.dart';
 
 const String studentName = 'Ni Wayan Enzy Ariantini';
@@ -333,6 +334,11 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 12),
+                  
+                  // Eksperimen ValueNotifier Tahap 4
+                  const ValueNotifierDemoCard(),
+                  const SizedBox(height: 16),
+
                   FilledButton.icon(
                     onPressed: () {
                       Navigator.pushNamed(
