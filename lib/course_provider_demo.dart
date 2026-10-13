@@ -37,7 +37,9 @@ class CourseProviderDemo extends StatelessWidget {
                 }
 
                 if (provider.error != null) {
-                  return Text('Terjadi kesalahan: ${provider.error}');
+                  return Text(
+                    'Terjadi kesalahan: ${provider.error}',
+                  );
                 }
 
                 if (provider.courses.isEmpty) {
@@ -47,7 +49,6 @@ class CourseProviderDemo extends StatelessWidget {
                 }
 
                 return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: provider.courses.map((course) {
                     return ListTile(
                       contentPadding: EdgeInsets.zero,

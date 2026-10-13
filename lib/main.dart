@@ -1,4 +1,3 @@
-
 import 'favorites_page.dart';
 import 'value_notifier_demo.dart';
 import 'course_state_demo.dart';
@@ -255,7 +254,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  // LOCAL STATE: hanya digunakan pada halaman Home.
   bool showDetail = false;
 
   @override
@@ -306,8 +304,6 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           const SizedBox(height: 20),
-
-          // TOMBOL UNTUK MENGUBAH LOCAL STATE
           Card(
             child: Padding(
               padding: const EdgeInsets.all(16),
@@ -345,8 +341,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  
-                  // Eksperimen ValueNotifier, CourseState, CourseProvider, dan CourseModel Demo
                   const ValueNotifierDemoCard(),
                   const SizedBox(height: 16),
                   const CourseStateDemo(),
@@ -355,7 +349,6 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 16),
                   const CourseModelDemo(),
                   const SizedBox(height: 16),
-
                   FilledButton.icon(
                     onPressed: () {
                       Navigator.pushNamed(
@@ -387,9 +380,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-
           const SizedBox(height: 20),
-
           FilledButton.icon(
             onPressed: () {
               Navigator.push(
@@ -420,19 +411,6 @@ class CoursesPage extends StatefulWidget {
 }
 
 class _CoursesPageState extends State<CoursesPage> {
-  // Single source of truth: status favorit disimpan di parent.
-  final Set<String> favorites = <String>{};
-
-  void toggleFavorite(String courseName) {
-    setState(() {
-      if (favorites.contains(courseName)) {
-        favorites.remove(courseName);
-      } else {
-        favorites.add(courseName);
-      }
-    });
-  }
-
   void openCourseDetail(Map<String, dynamic> course) {
     Navigator.push(
       context,
@@ -444,25 +422,23 @@ class _CoursesPageState extends State<CoursesPage> {
 
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<app_provider.CourseProvider>();
+
     return Column(
       children: [
-        // Widget pertama membaca state dari parent.
         Card(
           margin: const EdgeInsets.all(16),
           child: ListTile(
-            leading: const Icon(
-              Icons.favorite,
-              color: Colors.red,
-            ),
+            leading: const Icon(Icons.favorite, color: Colors.red),
             title: const Text('Ringkasan Favorit'),
             subtitle: Text(
-              'Jumlah course favorit: ${favorites.length}',
+              'Jumlah course favorit: ${provider.favorites.length}',
             ),
-            trailing: Text('${favorites.length}/${courses.length}'),
+            trailing: Text(
+              '${provider.favorites.length}/${courses.length}',
+            ),
           ),
         ),
-
-        // Widget kedua menerima state yang sama melalui constructor.
         Expanded(
           child: LayoutBuilder(
             builder: (context, constraints) {
@@ -474,20 +450,17 @@ class _CoursesPageState extends State<CoursesPage> {
                   itemCount: courses.length,
                   itemBuilder: (context, index) {
                     final course = courses[index];
-                    final String courseName =
-                        course['name'].toString();
+                    final String code = course['code'].toString();
 
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: CourseCard(
                         course: course,
-                        isFavorite: favorites.contains(courseName),
+                        isFavorite: provider.favorites.contains(code),
                         onFavorite: () {
-                          toggleFavorite(courseName);
+                          provider.toggleFavorite(code);
                         },
-                        onTap: () {
-                          openCourseDetail(course);
-                        },
+                        onTap: () => openCourseDetail(course),
                       ),
                     );
                   },
@@ -509,18 +482,15 @@ class _CoursesPageState extends State<CoursesPage> {
                 ),
                 itemBuilder: (context, index) {
                   final course = courses[index];
-                  final String courseName =
-                      course['name'].toString();
+                  final String code = course['code'].toString();
 
                   return CourseCard(
                     course: course,
-                    isFavorite: favorites.contains(courseName),
+                    isFavorite: provider.favorites.contains(code),
                     onFavorite: () {
-                      toggleFavorite(courseName);
+                      provider.toggleFavorite(code);
                     },
-                    onTap: () {
-                      openCourseDetail(course);
-                    },
+                    onTap: () => openCourseDetail(course),
                   );
                 },
               );
@@ -728,7 +698,6 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-
     namaController = TextEditingController(text: studentName);
     nimController = TextEditingController(text: studentId);
   }
@@ -764,7 +733,6 @@ class _ProfilePageState extends State<ProfilePage> {
             FilledButton(
               onPressed: () {
                 Navigator.pop(context);
-
                 ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(
                     content: Text('Feedback berhasil disimpan'),
@@ -840,11 +808,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     if (value == null || value.trim().isEmpty) {
                       return 'Komentar wajib diisi';
                     }
-
                     if (value.trim().length < 5) {
                       return 'Komentar minimal 5 karakter';
                     }
-
                     return null;
                   },
                 ),
