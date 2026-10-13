@@ -1,7 +1,6 @@
 import 'favorites_page.dart';
 import 'value_notifier_demo.dart';
 import 'course_state_demo.dart';
-import 'course_provider_demo.dart';
 import 'course_model_demo.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -881,5 +880,86 @@ class AboutPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+// =====================================================
+// COURSE PROVIDER DEMO WIDGET
+// =====================================================
+
+class CourseProviderDemo extends StatelessWidget {
+  const CourseProviderDemo({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Eksperimen watch, read, dan Consumer',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 12),
+            ElevatedButton(
+              onPressed: () {
+                context.read<app_provider.CourseProvider>().loadCourses();
+              },
+              child: const Text('Muat Data Mata Kuliah'),
+            ),
+            const SizedBox(height: 12),
+            Consumer<app_provider.CourseProvider>(
+              builder: (context, provider, child) {
+                if (provider.isLoading) {
+                  return const CircularProgressIndicator();
+                }
+
+                if (provider.error != null) {
+                  return Text(
+                    'Terjadi kesalahan: ${provider.error}',
+                  );
+                }
+
+                if (provider.courses.isEmpty) {
+                  return const Text(
+                    'Tekan tombol untuk memuat data mata kuliah.',
+                  );
+                }
+
+                return Column(
+                  children: provider.courses.map((course) {
+                    return ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(course.title),
+                      subtitle: Text(
+                        '${course.code}\n${course.credits} SKS',
+                      ),
+                    );
+                  }).toList(),
+                );
+              },
+            ),
+            const Divider(),
+            const FavoriteCount(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class FavoriteCount extends StatelessWidget {
+  const FavoriteCount({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final count = context.watch<app_provider.CourseProvider>().favorites.length;
+
+    return Text('Jumlah mata kuliah favorit: $count');
   }
 }

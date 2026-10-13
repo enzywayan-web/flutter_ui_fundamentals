@@ -1,7 +1,5 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'providers/course_provider.dart';
 
 class CourseProviderDemo extends StatelessWidget {
@@ -54,7 +52,7 @@ class CourseProviderDemo extends StatelessWidget {
                       contentPadding: EdgeInsets.zero,
                       title: Text(course.title),
                       subtitle: Text(
-                        '${course.code} • ${course.credits} SKS',
+                        '${course.code}\n${course.credits} SKS',
                       ),
                     );
                   }).toList(),
