@@ -5,10 +5,9 @@ import 'course_model_demo.dart';
 import 'widgets/error_view.dart';
 import 'screens/create_course_screen.dart';
 import 'screens/edit_course_screen.dart';
-
+import 'models/course.dart'; // Tambahan import model course
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'providers/course_provider.dart' as app_provider;
 
 const String studentName = 'Ni Wayan Enzy Ariantini';
@@ -33,11 +32,15 @@ class CourseExplorerApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      routes: {'/favorites-experiment': (context) => const FavoritesPage()},
+      routes: {
+        '/favorites-experiment': (context) => const FavoritesPage(),
+      },
       debugShowCheckedModeBanner: false,
       title: 'Course Explorer',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+        ),
         useMaterial3: true,
       ),
       home: const ResponsiveShell(),
@@ -102,7 +105,11 @@ class ResponsiveShell extends StatefulWidget {
 class _ResponsiveShellState extends State<ResponsiveShell> {
   int selectedIndex = 0;
 
-  final List<Widget> pages = const [HomePage(), CoursesPage(), ProfilePage()];
+  final List<Widget> pages = const [
+    HomePage(),
+    CoursesPage(),
+    ProfilePage(),
+  ];
 
   @override
   Widget build(BuildContext context) {
@@ -144,8 +151,12 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
                 Expanded(
                   child: Column(
                     children: [
-                      AppBar(title: const Text('Course Explorer')),
-                      Expanded(child: pages[selectedIndex]),
+                      AppBar(
+                        title: const Text('Course Explorer'),
+                      ),
+                      Expanded(
+                        child: pages[selectedIndex],
+                      ),
                     ],
                   ),
                 ),
@@ -155,7 +166,9 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
         }
 
         return Scaffold(
-          appBar: AppBar(title: const Text('Course Explorer')),
+          appBar: AppBar(
+            title: const Text('Course Explorer'),
+          ),
           body: pages[selectedIndex],
           bottomNavigationBar: NavigationBar(
             selectedIndex: selectedIndex,
@@ -202,7 +215,10 @@ class IdentityCard extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         child: Row(
           children: [
-            const CircleAvatar(radius: 28, child: Icon(Icons.person)),
+            const CircleAvatar(
+              radius: 28,
+              child: Icon(Icons.person),
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -210,7 +226,9 @@ class IdentityCard extends StatelessWidget {
                 children: [
                   Text(
                     studentName,
-                    style: Theme.of(context).textTheme.titleMedium
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 4),
@@ -254,18 +272,22 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const CreateCourseScreen()),
+                MaterialPageRoute(
+                  builder: (_) => const CreateCourseScreen(),
+                ),
               );
             },
             icon: const Icon(Icons.add),
             label: const Text('Tambah Mata Kuliah'),
           ),
           const SizedBox(height: 16),
-          const CourseProviderDemo(), // Diubah dari ApiGetDemo() menjadi CourseProviderDemo()
+          const CourseProviderDemo(),
           const SizedBox(height: 20),
           Text(
             'Selamat Datang 👋',
-            style: Theme.of(context).textTheme.headlineSmall
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),
@@ -284,7 +306,9 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 12),
                   Text(
                     'Responsive Layout',
-                    style: Theme.of(context).textTheme.titleLarge
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleLarge
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
@@ -306,7 +330,9 @@ class _HomePageState extends State<HomePage> {
                 children: [
                   Text(
                     'Contoh Local State',
-                    style: Theme.of(context).textTheme.titleMedium
+                    style: Theme.of(context)
+                        .textTheme
+                        .titleMedium
                         ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
@@ -322,10 +348,14 @@ class _HomePageState extends State<HomePage> {
                       });
                     },
                     icon: Icon(
-                      showDetail ? Icons.visibility_off : Icons.visibility,
+                      showDetail
+                          ? Icons.visibility_off
+                          : Icons.visibility,
                     ),
                     label: Text(
-                      showDetail ? 'Sembunyikan Detail' : 'Lihat Detail',
+                      showDetail
+                          ? 'Sembunyikan Detail'
+                          : 'Lihat Detail',
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -339,7 +369,10 @@ class _HomePageState extends State<HomePage> {
                   const SizedBox(height: 16),
                   FilledButton.icon(
                     onPressed: () {
-                      Navigator.pushNamed(context, '/favorites-experiment');
+                      Navigator.pushNamed(
+                        context,
+                        '/favorites-experiment',
+                      );
                     },
                     icon: const Icon(Icons.favorite),
                     label: const Text('Eksperimen Prop Drilling'),
@@ -349,7 +382,9 @@ class _HomePageState extends State<HomePage> {
                     const Divider(),
                     const Text(
                       'Detail Course Explorer',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 6),
                     const Text(
@@ -368,7 +403,9 @@ class _HomePageState extends State<HomePage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const AboutPage()),
+                MaterialPageRoute(
+                  builder: (context) => const AboutPage(),
+                ),
               );
             },
             icon: const Icon(Icons.info_outline),
@@ -395,7 +432,9 @@ class _CoursesPageState extends State<CoursesPage> {
   void openCourseDetail(Map<String, dynamic> course) {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => CourseDetailPage(course: course)),
+      MaterialPageRoute(
+        builder: (context) => CourseDetailPage(course: course),
+      ),
     );
   }
 
@@ -413,7 +452,9 @@ class _CoursesPageState extends State<CoursesPage> {
             subtitle: Text(
               'Jumlah course favorit: ${provider.favorites.length}',
             ),
-            trailing: Text('${provider.favorites.length}/${courses.length}'),
+            trailing: Text(
+              '${provider.favorites.length}/${courses.length}',
+            ),
           ),
         ),
         Expanded(
@@ -444,12 +485,14 @@ class _CoursesPageState extends State<CoursesPage> {
                 );
               }
 
-              final int columnCount = constraints.maxWidth >= 840 ? 3 : 2;
+              final int columnCount =
+                  constraints.maxWidth >= 840 ? 3 : 2;
 
               return GridView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: courses.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate:
+                    SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: columnCount,
                   crossAxisSpacing: 12,
                   mainAxisSpacing: 12,
@@ -529,12 +572,16 @@ class CourseCard extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  const CircleAvatar(child: Icon(Icons.book)),
+                  const CircleAvatar(
+                    child: Icon(Icons.book),
+                  ),
                   const Spacer(),
                   IconButton(
                     onPressed: onFavorite,
                     icon: Icon(
-                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      isFavorite
+                          ? Icons.favorite
+                          : Icons.favorite_border,
                       color: isFavorite ? Colors.red : null,
                     ),
                   ),
@@ -545,7 +592,9 @@ class CourseCard extends StatelessWidget {
                 course['name'].toString(),
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
                     ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 6),
@@ -575,12 +624,17 @@ class CourseCard extends StatelessWidget {
 class CourseDetailPage extends StatelessWidget {
   final Map<String, dynamic> course;
 
-  const CourseDetailPage({super.key, required this.course});
+  const CourseDetailPage({
+    super.key,
+    required this.course,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Detail Course')),
+      appBar: AppBar(
+        title: const Text('Detail Course'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -598,7 +652,9 @@ class CourseDetailPage extends StatelessWidget {
                     const SizedBox(height: 16),
                     Text(
                       course['name'].toString(),
-                      style: Theme.of(context).textTheme.headlineSmall
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                     const SizedBox(height: 16),
@@ -615,7 +671,9 @@ class CourseDetailPage extends StatelessWidget {
             FilledButton.icon(
               onPressed: () {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Course berhasil dipilih!')),
+                  const SnackBar(
+                    content: Text('Course berhasil dipilih!'),
+                  ),
                 );
               },
               icon: const Icon(Icons.check),
@@ -652,7 +710,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   late final TextEditingController namaController;
   late final TextEditingController nimController;
-  final TextEditingController komentarController = TextEditingController();
+  final TextEditingController komentarController =
+      TextEditingController();
 
   @override
   void initState() {
@@ -679,7 +738,9 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Konfirmasi Feedback'),
-          content: const Text('Apakah data feedback sudah benar?'),
+          content: const Text(
+            'Apakah data feedback sudah benar?',
+          ),
           actions: [
             TextButton(
               onPressed: () {
@@ -691,7 +752,9 @@ class _ProfilePageState extends State<ProfilePage> {
               onPressed: () {
                 Navigator.pop(context);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text('Feedback berhasil disimpan')),
+                  const SnackBar(
+                    content: Text('Feedback berhasil disimpan'),
+                  ),
                 );
               },
               child: const Text('Simpan'),
@@ -713,7 +776,9 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 20),
           Text(
             'Feedback',
-            style: Theme.of(context).textTheme.headlineSmall
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
                 ?.copyWith(fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
@@ -795,7 +860,9 @@ class AboutPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Informasi')),
+      appBar: AppBar(
+        title: const Text('Informasi'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -839,8 +906,69 @@ class AboutPage extends StatelessWidget {
 // COURSE PROVIDER DEMO WIDGET
 // =====================================================
 
-class CourseProviderDemo extends StatelessWidget {
+class CourseProviderDemo extends StatefulWidget {
   const CourseProviderDemo({super.key});
+
+  @override
+  State<CourseProviderDemo> createState() => _CourseProviderDemoState();
+}
+
+class _CourseProviderDemoState extends State<CourseProviderDemo> {
+  Future<void> _confirmDeleteCourse(
+    BuildContext context,
+    Course course,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) {
+        return AlertDialog(
+          title: const Text('Hapus Mata Kuliah?'),
+          content: Text(
+            'Apakah kamu yakin ingin menghapus '
+            '"${course.title}"?',
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, false);
+              },
+              child: const Text('Batal'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(dialogContext, true);
+              },
+              child: const Text('Hapus'),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !context.mounted) return;
+
+    final provider = context.read<app_provider.CourseProvider>();
+
+    try {
+      await provider.deleteCourse(course);
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Mata kuliah berhasil dihapus'),
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal menghapus mata kuliah: $e'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -852,7 +980,10 @@ class CourseProviderDemo extends StatelessWidget {
           children: [
             const Text(
               'Eksperimen watch, read, dan Consumer',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
             ),
             const SizedBox(height: 12),
             ElevatedButton(
@@ -865,7 +996,9 @@ class CourseProviderDemo extends StatelessWidget {
             Consumer<app_provider.CourseProvider>(
               builder: (context, provider, child) {
                 if (provider.isLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
                 }
 
                 if (provider.error != null) {
@@ -897,28 +1030,46 @@ class CourseProviderDemo extends StatelessWidget {
                         '${course.code}\n'
                         '${course.credits} SKS | Status: ${course.status}',
                       ),
-                      trailing: IconButton(
-                        tooltip: 'Edit mata kuliah',
-                        icon: const Icon(Icons.edit_outlined),
-                        onPressed: () {
-                          if (course.id == null) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text(
-                                  'ID mata kuliah tidak ditemukan.',
-                                ),
-                              ),
-                            );
-                            return;
-                          }
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          IconButton(
+                            tooltip: 'Edit mata kuliah',
+                            icon: const Icon(Icons.edit_outlined),
+                            onPressed: () {
+                              if (course.id == null) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                        'ID mata kuliah tidak ditemukan.'),
+                                  ),
+                                );
+                                return;
+                              }
 
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => EditCourseScreen(course: course),
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      EditCourseScreen(course: course),
+                                ),
+                              );
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(
+                              Icons.delete_outlined,
+                              color: Colors.red,
                             ),
-                          );
-                        },
+                            tooltip: 'Hapus mata kuliah',
+                            onPressed: provider.isSaving
+                                ? null
+                                : () => _confirmDeleteCourse(
+                                      context,
+                                      course,
+                                    ),
+                          ),
+                        ],
                       ),
                     );
                   }).toList(),
