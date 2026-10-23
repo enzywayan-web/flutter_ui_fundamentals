@@ -9,6 +9,7 @@ class CourseApiService {
 
   final String baseUrl;
 
+  // GET: Mengambil daftar mata kuliah
   Future<List<Course>> getCourses() async {
     final response = await http.get(Uri.parse('$baseUrl/courses'));
 
@@ -21,6 +22,7 @@ class CourseApiService {
     return data.map((e) => Course.fromJson(e as Map<String, dynamic>)).toList();
   }
 
+  // POST: Menambahkan mata kuliah baru
   Future<Course> createCourse(Course course) async {
     final response = await http.post(
       Uri.parse('$baseUrl/courses'),
@@ -33,5 +35,18 @@ class CourseApiService {
     }
 
     throw Exception('Gagal membuat course. HTTP ${response.statusCode}');
+  }
+
+  // PUT: Memperbarui data mata kuliah
+  Future<void> updateCourse(int id, Course course) async {
+    final response = await http.put(
+      Uri.parse('$baseUrl/courses/$id'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(course.toJson()),
+    );
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception('Gagal memperbarui course. HTTP ${response.statusCode}');
+    }
   }
 }

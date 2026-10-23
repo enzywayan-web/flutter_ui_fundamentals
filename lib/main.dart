@@ -4,6 +4,7 @@ import 'course_state_demo.dart';
 import 'course_model_demo.dart';
 import 'widgets/error_view.dart';
 import 'screens/create_course_screen.dart';
+import 'screens/edit_course_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -260,7 +261,7 @@ class _HomePageState extends State<HomePage> {
             label: const Text('Tambah Mata Kuliah'),
           ),
           const SizedBox(height: 16),
-          const CourseProviderDemo(),
+          const CourseProviderDemo(), // Diubah dari ApiGetDemo() menjadi CourseProviderDemo()
           const SizedBox(height: 20),
           Text(
             'Selamat Datang 👋',
@@ -890,8 +891,35 @@ class CourseProviderDemo extends StatelessWidget {
                   children: provider.courses.map((course) {
                     return ListTile(
                       contentPadding: EdgeInsets.zero,
+                      leading: const Icon(Icons.menu_book),
                       title: Text(course.title),
-                      subtitle: Text('${course.code}\n${course.credits} SKS'),
+                      subtitle: Text(
+                        '${course.code}\n'
+                        '${course.credits} SKS | Status: ${course.status}',
+                      ),
+                      trailing: IconButton(
+                        tooltip: 'Edit mata kuliah',
+                        icon: const Icon(Icons.edit_outlined),
+                        onPressed: () {
+                          if (course.id == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'ID mata kuliah tidak ditemukan.',
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => EditCourseScreen(course: course),
+                            ),
+                          );
+                        },
+                      ),
                     );
                   }).toList(),
                 );
