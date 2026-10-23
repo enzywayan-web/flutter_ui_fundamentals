@@ -2,6 +2,7 @@ import 'favorites_page.dart';
 import 'value_notifier_demo.dart';
 import 'course_state_demo.dart';
 import 'course_model_demo.dart';
+import 'api_get_demo.dart'; // Tambahan import untuk API Get Demo
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/course_provider.dart' as app_provider;
@@ -263,6 +264,8 @@ class _HomePageState extends State<HomePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const IdentityCard(),
+          const SizedBox(height: 16),
+          const ApiGetDemo(), // Widget ApiGetDemo ditambahkan di sini
           const SizedBox(height: 20),
           Text(
             'Selamat Datang 👋',
