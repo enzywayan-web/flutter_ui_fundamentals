@@ -17,9 +17,7 @@ class CourseProvider extends ChangeNotifier {
           );
 
   List<Course> courses = [];
-
   bool isLoading = false;
-
   String? error;
 
   Future<void> loadCourses() async {
