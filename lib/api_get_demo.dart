@@ -1,30 +1,31 @@
-
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-// Endpoint REST API dari dosen.
-const String apiUrl =
-    'https://course-api-pearl.vercel.app/courses';
+import 'models/course.dart';
 
-// Fungsi asynchronous untuk mengambil data course.
-Future<List<dynamic>> fetchCourses() async {
+const String apiUrl = 'https://course-api-pearl.vercel.app/courses';
+
+Future<List<Course>> fetchCourses() async {
   final response = await http.get(Uri.parse(apiUrl));
 
   debugPrint('HTTP Status Code: ${response.statusCode}');
 
   if (response.statusCode == 200) {
-    final data = jsonDecode(response.body) as List<dynamic>;
+    final List<dynamic> jsonList = jsonDecode(response.body) as List<dynamic>;
 
-    debugPrint('Jumlah data course: ${data.length}');
+    final List<Course> courses = jsonList
+        .map((item) => Course.fromJson(item as Map<String, dynamic>))
+        .toList();
 
-    return data;
+    debugPrint('Jumlah data course: ${courses.length}');
+    return courses;
   }
 
-  throw Exception('HTTP ${response.statusCode}');
+  throw Exception('Gagal mengambil data. HTTP ${response.statusCode}');
 }
 
-// Widget untuk menguji HTTP GET pada aplikasi.
 class ApiGetDemo extends StatefulWidget {
   const ApiGetDemo({super.key});
 
@@ -34,29 +35,29 @@ class ApiGetDemo extends StatefulWidget {
 
 class _ApiGetDemoState extends State<ApiGetDemo> {
   bool isLoading = false;
-  int? jumlahData;
+  List<Course> courses = [];
   String? pesanError;
 
   Future<void> muatData() async {
     setState(() {
       isLoading = true;
       pesanError = null;
-      jumlahData = null;
     });
 
     try {
-      final data = await fetchCourses();
+      final hasil = await fetchCourses();
 
       if (!mounted) return;
 
       setState(() {
-        jumlahData = data.length;
+        courses = hasil;
       });
     } catch (e) {
       if (!mounted) return;
 
       setState(() {
         pesanError = e.toString();
+        courses = [];
       });
 
       debugPrint('Terjadi kesalahan: $e');
@@ -78,15 +79,12 @@ class _ApiGetDemoState extends State<ApiGetDemo> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Praktikum Tahap 2 - HTTP GET',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              'Praktikum Tahap 3 - Model Course',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
+            const Text('Metode: HTTP GET'),
             const Text('Endpoint: /courses'),
-            const Text('Metode: GET'),
             const SizedBox(height: 12),
             SizedBox(
               width: double.infinity,
@@ -97,25 +95,38 @@ class _ApiGetDemoState extends State<ApiGetDemo> {
               ),
             ),
             const SizedBox(height: 12),
-            if (isLoading)
-              const Center(
-                child: CircularProgressIndicator(),
-              ),
-            if (jumlahData != null)
+
+            if (isLoading) const Center(child: CircularProgressIndicator()),
+
+            if (pesanError != null)
               Text(
-                'Berhasil! Jumlah data: $jumlahData',
+                'Gagal mengambil data: $pesanError',
+                style: const TextStyle(color: Colors.red),
+              ),
+
+            if (!isLoading && pesanError == null && courses.isNotEmpty)
+              Text(
+                'Berhasil! Jumlah data: ${courses.length}',
                 style: const TextStyle(
                   color: Colors.green,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-            if (pesanError != null)
-              Text(
-                'Gagal mengambil data: $pesanError',
-                style: const TextStyle(
-                  color: Colors.red,
+
+            if (courses.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              ...courses.map(
+                (course) => ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(Icons.menu_book),
+                  title: Text('${course.code} - ${course.title}'),
+                  subtitle: Text(
+                    'Status: ${course.status} | '
+                    'Kredit: ${course.credits}',
+                  ),
                 ),
               ),
+            ],
           ],
         ),
       ),
