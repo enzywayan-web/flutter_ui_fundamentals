@@ -1,116 +1,56 @@
-import 'package:flutter/material.dart';
 
-import 'models/course.dart';
-import 'services/course_api_service.dart';
+import 'dart:convert';
 
-const String apiBaseUrl = 'https://course-api-pearl.vercel.app';
+import 'package:http/http.dart' as http;
 
-final CourseApiService courseApiService = CourseApiService(apiBaseUrl);
+import '../models/course.dart';
 
-class ApiGetDemo extends StatefulWidget {
-  const ApiGetDemo({super.key});
+class CourseApiService {
+  CourseApiService(this.baseUrl);
 
-  @override
-  State<ApiGetDemo> createState() => _ApiGetDemoState();
-}
+  final String baseUrl;
 
-class _ApiGetDemoState extends State<ApiGetDemo> {
-  bool isLoading = false;
-  List<Course> courses = [];
-  String? pesanError;
+  Future<List<Course>> getCourses() async {
+    final response = await http.get(
+      Uri.parse('$baseUrl/courses'),
+    );
 
-  Future<void> muatData() async {
-    setState(() {
-      isLoading = true;
-      pesanError = null;
-    });
-
-    try {
-      final hasil = await courseApiService.getCourses();
-
-      if (!mounted) return;
-
-      setState(() {
-        courses = hasil;
-      });
-    } catch (e) {
-      if (!mounted) return;
-
-      setState(() {
-        pesanError = e.toString();
-        courses = [];
-      });
-
-      debugPrint('Terjadi kesalahan: $e');
-    } finally {
-      if (mounted) {
-        setState(() {
-          isLoading = false;
-        });
-      }
+    if (response.statusCode != 200) {
+      throw Exception(
+        'Gagal mengambil course. HTTP ${response.statusCode}',
+      );
     }
+
+    final List<dynamic> data =
+        jsonDecode(response.body) as List<dynamic>;
+
+    return data
+        .map(
+          (e) => Course.fromJson(
+            e as Map<String, dynamic>,
+          ),
+        )
+        .toList();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const Text(
-              'Praktikum Tahap 4 - Service Layer',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text('Metode: HTTP GET'),
-            const Text('Endpoint: /courses'),
-            const SizedBox(height: 12),
-            SizedBox(
-              width: double.infinity,
-              child: FilledButton.icon(
-                onPressed: isLoading ? null : muatData,
-                icon: const Icon(Icons.cloud_download),
-                label: const Text('Ambil Data dari API'),
-              ),
-            ),
-            const SizedBox(height: 12),
+  Future<Course> createCourse(Course course) async {
+    final response = await http.post(
+      Uri.parse('$baseUrl/courses'),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(course.toJson()),
+    );
 
-            if (isLoading) const Center(child: CircularProgressIndicator()),
+    if (response.statusCode == 200 ||
+        response.statusCode == 201) {
+      return Course.fromJson(
+        jsonDecode(response.body) as Map<String, dynamic>,
+      );
+    }
 
-            if (pesanError != null)
-              Text(
-                'Gagal mengambil data: $pesanError',
-                style: const TextStyle(color: Colors.red),
-              ),
-
-            if (!isLoading && pesanError == null && courses.isNotEmpty)
-              Text(
-                'Berhasil! Jumlah data: ${courses.length}',
-                style: const TextStyle(
-                  color: Colors.green,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-
-            if (courses.isNotEmpty) ...[
-              const SizedBox(height: 8),
-              ...courses.map(
-                (course) => ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(Icons.menu_book),
-                  title: Text('${course.code} - ${course.title}'),
-                  subtitle: Text(
-                    'Status: ${course.status} | '
-                    'Kredit: ${course.credits}',
-                  ),
-                ),
-              ),
-            ],
-          ],
-        ),
-      ),
+    throw Exception(
+      'Gagal membuat course. HTTP ${response.statusCode}',
     );
   }
 }

@@ -2,8 +2,8 @@ import 'favorites_page.dart';
 import 'value_notifier_demo.dart';
 import 'course_state_demo.dart';
 import 'course_model_demo.dart';
-import 'api_get_demo.dart';
-import 'widgets/error_view.dart'; // Tambahan import untuk ErrorView
+import 'widgets/error_view.dart';
+import 'screens/create_course_screen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -16,8 +16,7 @@ const String studentId = '2415051070';
 void main() {
   runApp(
     ChangeNotifierProvider(
-      create: (_) => app_provider.CourseProvider()
-        ..loadCourses(), // Diubah menggunakan cascade operator ..loadCourses()
+      create: (_) => app_provider.CourseProvider()..loadCourses(),
       child: const CourseExplorerApp(),
     ),
   );
@@ -250,7 +249,18 @@ class _HomePageState extends State<HomePage> {
         children: [
           const IdentityCard(),
           const SizedBox(height: 16),
-          const ApiGetDemo(),
+          ElevatedButton.icon(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const CreateCourseScreen()),
+              );
+            },
+            icon: const Icon(Icons.add),
+            label: const Text('Tambah Mata Kuliah'),
+          ),
+          const SizedBox(height: 16),
+          const CourseProviderDemo(),
           const SizedBox(height: 20),
           Text(
             'Selamat Datang 👋',

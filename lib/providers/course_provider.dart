@@ -18,6 +18,7 @@ class CourseProvider extends ChangeNotifier {
 
   List<Course> courses = [];
   bool isLoading = false;
+  bool isSaving = false;
   String? error;
 
   Future<void> loadCourses() async {
@@ -31,6 +32,24 @@ class CourseProvider extends ChangeNotifier {
       error = e.toString();
     } finally {
       isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<Course> createCourse(Course course) async {
+    if (isSaving) {
+      throw Exception('Penyimpanan sedang berlangsung.');
+    }
+
+    isSaving = true;
+    notifyListeners();
+
+    try {
+      final createdCourse = await repository.createCourse(course);
+      await loadCourses();
+      return createdCourse;
+    } finally {
+      isSaving = false;
       notifyListeners();
     }
   }
