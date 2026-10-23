@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'models/course.dart';
-import 'services/course_service.dart';
 
 class CourseModelDemo extends StatefulWidget {
   const CourseModelDemo({super.key});
@@ -14,8 +13,6 @@ class CourseModelDemo extends StatefulWidget {
 }
 
 class _CourseModelDemoState extends State<CourseModelDemo> {
-  final CourseService courseService = CourseService();
-
   late Future<List<Course>> coursesFuture;
 
   @override
@@ -25,17 +22,12 @@ class _CourseModelDemoState extends State<CourseModelDemo> {
   }
 
   Future<List<Course>> loadCourses() async {
-    final response =
-        await rootBundle.loadString('assets/data/courses.json');
+    final response = await rootBundle.loadString('assets/data/courses.json');
 
     final List<dynamic> data = jsonDecode(response) as List<dynamic>;
 
     return data
-        .map(
-          (item) => Course.fromJson(
-            item as Map<String, dynamic>,
-          ),
-        )
+        .map((item) => Course.fromJson(item as Map<String, dynamic>))
         .toList();
   }
 
@@ -49,32 +41,24 @@ class _CourseModelDemoState extends State<CourseModelDemo> {
           children: [
             const Text(
               'Model Course dari JSON',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 12),
             FutureBuilder<List<Course>>(
               future: coursesFuture,
               builder: (context, snapshot) {
-                if (snapshot.connectionState ==
-                    ConnectionState.waiting) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
                   return const CircularProgressIndicator();
                 }
 
                 if (snapshot.hasError) {
-                  return Text(
-                    'Gagal memuat data: ${snapshot.error}',
-                  );
+                  return Text('Gagal memuat data: ${snapshot.error}');
                 }
 
                 final courses = snapshot.data ?? [];
 
                 if (courses.isEmpty) {
-                  return const Text(
-                    'Belum ada data mata kuliah.',
-                  );
+                  return const Text('Belum ada data mata kuliah.');
                 }
 
                 return Column(

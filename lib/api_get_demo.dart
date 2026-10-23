@@ -1,30 +1,11 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
 import 'models/course.dart';
+import 'services/course_api_service.dart';
 
-const String apiUrl = 'https://course-api-pearl.vercel.app/courses';
+const String apiBaseUrl = 'https://course-api-pearl.vercel.app';
 
-Future<List<Course>> fetchCourses() async {
-  final response = await http.get(Uri.parse(apiUrl));
-
-  debugPrint('HTTP Status Code: ${response.statusCode}');
-
-  if (response.statusCode == 200) {
-    final List<dynamic> jsonList = jsonDecode(response.body) as List<dynamic>;
-
-    final List<Course> courses = jsonList
-        .map((item) => Course.fromJson(item as Map<String, dynamic>))
-        .toList();
-
-    debugPrint('Jumlah data course: ${courses.length}');
-    return courses;
-  }
-
-  throw Exception('Gagal mengambil data. HTTP ${response.statusCode}');
-}
+final CourseApiService courseApiService = CourseApiService(apiBaseUrl);
 
 class ApiGetDemo extends StatefulWidget {
   const ApiGetDemo({super.key});
@@ -45,7 +26,7 @@ class _ApiGetDemoState extends State<ApiGetDemo> {
     });
 
     try {
-      final hasil = await fetchCourses();
+      final hasil = await courseApiService.getCourses();
 
       if (!mounted) return;
 
@@ -79,7 +60,7 @@ class _ApiGetDemoState extends State<ApiGetDemo> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             const Text(
-              'Praktikum Tahap 3 - Model Course',
+              'Praktikum Tahap 4 - Service Layer',
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),

@@ -1,9 +1,8 @@
-﻿
 import 'package:flutter/material.dart';
 
 import '../models/course.dart';
 import '../repositories/course_repository.dart';
-import '../services/course_service.dart';
+import '../services/course_api_service.dart';
 
 class CourseProvider extends ChangeNotifier {
   final Set<String> favorites = <String>{};
@@ -11,8 +10,11 @@ class CourseProvider extends ChangeNotifier {
   final CourseRepository repository;
 
   CourseProvider({CourseRepository? repository})
-      : repository =
-            repository ?? CourseRepository(CourseService());
+    : repository =
+          repository ??
+          CourseRepository(
+            CourseApiService('https://course-api-pearl.vercel.app'),
+          );
 
   List<Course> courses = [];
 
