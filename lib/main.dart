@@ -5,18 +5,26 @@ import 'course_model_demo.dart';
 import 'widgets/error_view.dart';
 import 'screens/create_course_screen.dart';
 import 'screens/edit_course_screen.dart';
-import 'models/course.dart'; // Tambahan import model course
+import 'models/course.dart';
+import 'services/course_api_service.dart';
+import 'repositories/course_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'providers/course_provider.dart' as app_provider;
 
 const String studentName = 'Ni Wayan Enzy Ariantini';
 const String studentId = '2415051070';
+const apiBaseUrl = 'https://course-api-pearl.vercel.app';
 
 void main() {
+  final repository = CourseRepository(
+    CourseApiService(apiBaseUrl),
+  );
+
   runApp(
     ChangeNotifierProvider(
-      create: (_) => app_provider.CourseProvider()..loadCourses(),
+      create: (_) =>
+          app_provider.CourseProvider(repository)..loadCourses(),
       child: const CourseExplorerApp(),
     ),
   );
