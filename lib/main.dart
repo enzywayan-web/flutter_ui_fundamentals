@@ -5,8 +5,9 @@ import 'course_model_demo.dart';
 import 'widgets/error_view.dart';
 import 'screens/create_course_screen.dart';
 import 'screens/edit_course_screen.dart';
+
 import 'models/course.dart';
-import 'services/course_supabase_service.dart'; // Menggunakan Supabase service
+import 'services/course_supabase_service.dart';
 import 'repositories/course_repository.dart';
 import 'config/supabase_config.dart';
 import 'package:flutter/material.dart';
@@ -123,17 +124,17 @@ class ResponsiveShell extends StatefulWidget {
 class _ResponsiveShellState extends State<ResponsiveShell> {
   int selectedIndex = 0;
 
-  final List<Widget> pages = const [
-    HomePage(),
-    CoursesPage(),
-    ProfilePage(),
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final pages = [
+      const HomePage(),
+      const CoursesPage(),
+      const ProfilePage(),
+    ];
+
     return LayoutBuilder(
       builder: (context, constraints) {
-        final bool expanded = constraints.maxWidth >= 840;
+        final expanded = constraints.maxWidth >= 840;
 
         if (expanded) {
           return Scaffold(
@@ -142,9 +143,7 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
                 NavigationRail(
                   selectedIndex: selectedIndex,
                   onDestinationSelected: (index) {
-                    setState(() {
-                      selectedIndex = index;
-                    });
+                    setState(() => selectedIndex = index);
                   },
                   labelType: NavigationRailLabelType.all,
                   destinations: const [
@@ -159,7 +158,7 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
                       label: Text('Courses'),
                     ),
                     NavigationRailDestination(
-                      icon: Icon(Icons.person_outlined),
+                      icon: Icon(Icons.person_outline),
                       selectedIcon: Icon(Icons.person),
                       label: Text('Profile'),
                     ),
@@ -169,12 +168,8 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
                 Expanded(
                   child: Column(
                     children: [
-                      AppBar(
-                        title: const Text('Course Explorer'),
-                      ),
-                      Expanded(
-                        child: pages[selectedIndex],
-                      ),
+                      AppBar(title: const Text('Course Data Manager')),
+                      Expanded(child: pages[selectedIndex]),
                     ],
                   ),
                 ),
@@ -185,30 +180,25 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
 
         return Scaffold(
           appBar: AppBar(
-            title: const Text('Course Explorer'),
+            title: const Text('Course Data Manager'),
           ),
           body: pages[selectedIndex],
           bottomNavigationBar: NavigationBar(
             selectedIndex: selectedIndex,
             onDestinationSelected: (index) {
-              setState(() {
-                selectedIndex = index;
-              });
+              setState(() => selectedIndex = index);
             },
             destinations: const [
               NavigationDestination(
                 icon: Icon(Icons.home_outlined),
-                selectedIcon: Icon(Icons.home),
                 label: 'Home',
               ),
               NavigationDestination(
                 icon: Icon(Icons.menu_book_outlined),
-                selectedIcon: Icon(Icons.menu_book),
                 label: 'Courses',
               ),
               NavigationDestination(
-                icon: Icon(Icons.person_outlined),
-                selectedIcon: Icon(Icons.person),
+                icon: Icon(Icons.person_outline),
                 label: 'Profile',
               ),
             ],
