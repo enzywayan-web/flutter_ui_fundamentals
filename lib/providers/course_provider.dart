@@ -31,6 +31,7 @@ class CourseProvider extends ChangeNotifier {
     }
   }
 
+  // Tahap 13: INSERT data mata kuliah
   Future<Course> createCourse(Course course) async {
     if (isSaving) {
       throw Exception('Penyimpanan sedang berlangsung.');
@@ -52,10 +53,8 @@ class CourseProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateCourse(
-    int id,
-    Course course,
-  ) async {
+  // Tahap 14: UPDATE data mata kuliah
+  Future<void> updateCourse(int id, Course course) async {
     if (isSaving) {
       throw Exception('Penyimpanan sedang berlangsung.');
     }
@@ -72,19 +71,20 @@ class CourseProvider extends ChangeNotifier {
     }
   }
 
+  // DELETE data mata kuliah
   Future<void> deleteCourse(Course course) async {
     final id = course.id;
 
-    if (id == null || isSaving) return;
+    if (id == null || isSaving) {
+      return;
+    }
 
     isSaving = true;
     notifyListeners();
 
     try {
       await repository.deleteCourse(id);
-
       favorites.remove(course.code);
-
       await loadCourses();
     } finally {
       isSaving = false;
@@ -92,6 +92,7 @@ class CourseProvider extends ChangeNotifier {
     }
   }
 
+  // Mengatur mata kuliah favorit
   void toggleFavorite(String id) {
     if (favorites.contains(id)) {
       favorites.remove(id);

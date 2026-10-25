@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -8,7 +9,8 @@ class CreateCourseScreen extends StatefulWidget {
   const CreateCourseScreen({super.key});
 
   @override
-  State<CreateCourseScreen> createState() => _CreateCourseScreenState();
+  State<CreateCourseScreen> createState() =>
+      _CreateCourseScreenState();
 }
 
 class _CreateCourseScreenState extends State<CreateCourseScreen> {
@@ -27,55 +29,55 @@ class _CreateCourseScreenState extends State<CreateCourseScreen> {
     super.dispose();
   }
 
-  
-Future<void> _saveCourse() async {
-  if (!_formKey.currentState!.validate()) {
-    return;
-  }
+  Future<void> _saveCourse() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
 
-  final provider = context.read<CourseProvider>();
-  final messenger = ScaffoldMessenger.of(context);
-  final navigator = Navigator.of(context);
+    final provider = context.read<CourseProvider>();
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
 
-  final course = Course(
-    code: _codeController.text.trim(),
-    title: _titleController.text.trim(),
-    credits: int.parse(_creditsController.text.trim()),
-    status: _status,
-  );
-
-  try {
-    await provider.createCourse(course);
-
-    if (!mounted) return;
-
-    messenger.showSnackBar(
-      const SnackBar(
-        content: Text('Mata kuliah berhasil ditambahkan.'),
-        backgroundColor: Colors.green,
-      ),
+    final course = Course(
+      code: _codeController.text.trim(),
+      title: _titleController.text.trim(),
+      credits: int.parse(_creditsController.text.trim()),
+      status: _status,
     );
 
-    navigator.pop();
-  } catch (e) {
-    if (!mounted) return;
+    try {
+      await provider.createCourse(course);
 
-    messenger.showSnackBar(
-      SnackBar(
-        content: Text('Gagal menyimpan mata kuliah: $e'),
-        backgroundColor: Colors.red,
-      ),
-    );
+      if (!mounted) return;
+
+      messenger.showSnackBar(
+        const SnackBar(
+          content: Text('Mata kuliah berhasil ditambahkan.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      navigator.pop();
+    } catch (e) {
+      if (!mounted) return;
+
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Gagal menyimpan mata kuliah: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
     final isSaving = context.watch<CourseProvider>().isSaving;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Tambah Mata Kuliah')),
+      appBar: AppBar(
+        title: const Text('Tambah Mata Kuliah'),
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Form(
@@ -126,11 +128,13 @@ Future<void> _saveCourse() async {
                     return 'SKS wajib diisi.';
                   }
 
-                  if (int.tryParse(value.trim()) == null) {
+                  final credits = int.tryParse(value.trim());
+
+                  if (credits == null) {
                     return 'SKS harus berupa angka bulat.';
                   }
 
-                  if (int.parse(value.trim()) <= 0) {
+                  if (credits <= 0) {
                     return 'SKS harus lebih dari 0.';
                   }
 
@@ -145,9 +149,18 @@ Future<void> _saveCourse() async {
                   border: OutlineInputBorder(),
                 ),
                 items: const [
-                  DropdownMenuItem(value: 'planned', child: Text('Planned')),
-                  DropdownMenuItem(value: 'active', child: Text('Active')),
-                  DropdownMenuItem(value: 'done', child: Text('Done')),
+                  DropdownMenuItem(
+                    value: 'planned',
+                    child: Text('Planned'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'active',
+                    child: Text('Active'),
+                  ),
+                  DropdownMenuItem(
+                    value: 'done',
+                    child: Text('Done'),
+                  ),
                 ],
                 onChanged: isSaving
                     ? null
@@ -166,10 +179,16 @@ Future<void> _saveCourse() async {
                     ? const SizedBox(
                         width: 18,
                         height: 18,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
                       )
                     : const Icon(Icons.save),
-                label: Text(isSaving ? 'Menyimpan...' : 'Simpan Mata Kuliah'),
+                label: Text(
+                  isSaving
+                      ? 'Menyimpan...'
+                      : 'Simpan Mata Kuliah',
+                ),
               ),
             ],
           ),
