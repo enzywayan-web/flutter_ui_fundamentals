@@ -8,15 +8,26 @@ import 'screens/edit_course_screen.dart';
 import 'models/course.dart';
 import 'services/course_api_service.dart';
 import 'repositories/course_repository.dart';
+import 'config/supabase_config.dart'; // Tambahan import Supabase config
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'; // Tambahan import Supabase Flutter
 import 'providers/course_provider.dart' as app_provider;
 
 const String studentName = 'Ni Wayan Enzy Ariantini';
 const String studentId = '2415051070';
 const apiBaseUrl = 'https://course-api-pearl.vercel.app';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Inisialisasi Supabase
+  await Supabase.initialize(
+    url: SupabaseConfig.supabaseUrl,
+    publishableKey: SupabaseConfig.publishableKey,
+  );
+
+  // Perakitan service, repository, dan provider
   final repository = CourseRepository(
     CourseApiService(apiBaseUrl),
   );
