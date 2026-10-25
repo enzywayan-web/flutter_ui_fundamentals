@@ -72,25 +72,23 @@ class CourseProvider extends ChangeNotifier {
   }
 
   // DELETE data mata kuliah
-  Future<void> deleteCourse(Course course) async {
-    final id = course.id;
+ Future<void> deleteCourse(Course course) async {
+  final id = course.id;
 
-    if (id == null || isSaving) {
-      return;
-    }
+  if (id == null || isSaving) return;
 
-    isSaving = true;
+  isSaving = true;
+  notifyListeners();
+
+  try {
+    await repository.deleteCourse(id);
+    favorites.remove(course.code);
+    await loadCourses();
+  } finally {
+    isSaving = false;
     notifyListeners();
-
-    try {
-      await repository.deleteCourse(id);
-      favorites.remove(course.code);
-      await loadCourses();
-    } finally {
-      isSaving = false;
-      notifyListeners();
-    }
   }
+}
 
   // Mengatur mata kuliah favorit
   void toggleFavorite(String id) {
