@@ -1,3 +1,4 @@
+
 import 'package:flutter/material.dart';
 
 import '../models/course.dart';
@@ -39,8 +40,11 @@ class CourseProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final createdCourse = await repository.createCourse(course);
+      final createdCourse =
+          await repository.createCourse(course);
+
       await loadCourses();
+
       return createdCourse;
     } finally {
       isSaving = false;
@@ -48,7 +52,10 @@ class CourseProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> updateCourse(int id, Course course) async {
+  Future<void> updateCourse(
+    int id,
+    Course course,
+  ) async {
     if (isSaving) {
       throw Exception('Penyimpanan sedang berlangsung.');
     }
@@ -76,10 +83,8 @@ class CourseProvider extends ChangeNotifier {
     try {
       await repository.deleteCourse(id);
 
-      // Hapus juga dari favorites berdasarkan code.
       favorites.remove(course.code);
 
-      // Muat ulang data dari API.
       await loadCourses();
     } finally {
       isSaving = false;
