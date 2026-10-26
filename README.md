@@ -1,61 +1,46 @@
-# Course Explorer — Flutter UI Fundamentals
+# Flutter UI Fundamentals — Course Explorer
 
-Project ini merupakan aplikasi Flutter untuk pembelajaran mata kuliah Pemrograman Mobile. Project dikembangkan secara bertahap dari Course Explorer menjadi Course Data Manager dengan integrasi REST API.
+## Deskripsi Aplikasi
+Course Explorer adalah aplikasi Flutter untuk menampilkan dan mengelola data mata kuliah. Aplikasi memiliki tampilan responsif, navigasi antarhalaman, fitur favorit, serta pengelolaan data mata kuliah.
 
-## Getting Started
+## Fitur Utama
+- Tampilan responsif untuk ukuran layar berbeda.
+- Navigasi halaman Home, Courses, dan Profile.
+- Menampilkan dan mengelola data mata kuliah.
+- Menambahkan, mengubah, dan menghapus data mata kuliah.
+- Menandai mata kuliah favorit.
+- Pengujian penanganan HTTP 404, JSON mapping error, dan akses Supabase.
+- Validasi kode mata kuliah duplikat pada data yang telah dimuat.
 
-### Teknologi yang Digunakan
-- Flutter
-- Dart
-- Package `http`
-- REST API
-- Git dan GitHub
+## Teknologi yang Digunakan
+- Flutter dan Dart.
+- Provider untuk pengelolaan state.
+- Supabase sebagai backend dan database.
+- Git dan GitHub untuk version control.
 
-## Tahap 1 — Membaca REST Endpoint dan JSON
+## Arsitektur Singkat
+- `lib/models/`: model data mata kuliah.
+- `lib/providers/`: pengelolaan state dan logika aplikasi.
+- `lib/repositories/`: abstraksi akses data.
+- `lib/services/`: komunikasi dengan sumber data.
+- `lib/screens/`: halaman aplikasi.
+- `lib/widgets/`: komponen antarmuka yang dapat digunakan kembali.
+- `lib/main.dart`: entry point dan konfigurasi utama aplikasi.
 
-### Informasi API
-- **Base URL:** https://course-api-pearl.vercel.app
-- **Endpoint:** https://course-api-pearl.vercel.app/courses
-- **HTTP Method:** GET
-- **Status Code:** 200 OK
-- **Resource:** courses
+## Cara Menjalankan
+1. Instal Flutter SDK dan siapkan Android Emulator atau perangkat Android.
+2. Clone repository ini.
+3. Buka terminal di folder project.
+4. Jalankan `flutter pub get`.
+5. Konfigurasikan URL Supabase dan anon/publishable key sesuai kebutuhan project.
+6. Jalankan `flutter run`.
 
-### Fungsi Endpoint
-Endpoint `/courses` digunakan untuk mengambil daftar mata kuliah dari REST API yang diberikan dosen.
+## Keamanan
+Jangan memasukkan password, access token, `service_role` key, atau credential rahasia ke repository. Terapkan Row Level Security (RLS) dan validasi pada backend sesuai kebutuhan aplikasi.
 
-### Struktur Response JSON
-Respons API berupa array yang berisi data mata kuliah. Setiap data memiliki field berikut:
+## Informasi Repository
+Repository: https://github.com/enzywayan-web/flutter_ui_fundamentals
 
-| Field | Keterangan |
-|---|---|
-| `id` | Identitas mata kuliah |
-| `code` | Kode mata kuliah |
-| `title` | Nama mata kuliah |
-| `credits` | Jumlah SKS |
-| `status` | Status mata kuliah |
-| `created_at` | Waktu pembuatan data |
-
-### Hasil Pengujian
-Pengujian dilakukan menggunakan terminal VS Code dengan perintah:
-
-```bash
-curl.exe -i https://course-api-pearl.vercel.app/courses
-```
-
-Hasil pengujian menunjukkan status HTTP `200 OK`, yang berarti permintaan berhasil. Respons JSON yang diperoleh berisi 7 data mata kuliah pada saat pengujian dilakukan.
-
-### Contoh Response JSON
-
-```json
-{
-  "id": 1,
-  "code": "MOB01",
-  "title": "Git & GitHub",
-  "credits": 2,
-  "status": "active",
-  "created_at": "2026-10-21T03:28:08.91197Z"
-}
-```
-
-### Catatan
-Tahap ini berfokus pada pengenalan endpoint REST API, HTTP method GET, status code, dan struktur JSON. Informasi tersebut menjadi dasar untuk proses pengambilan dan pengolahan data mata kuliah pada tahap berikutnya.
+NIM: [2415051070]
+Nama: [Ni Wayan Enzy Araintini]
+Mata Kuliah: Pemrograman Berbasis Mobile
