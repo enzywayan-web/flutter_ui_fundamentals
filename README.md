@@ -42,5 +42,5 @@ Jangan memasukkan password, access token, `service_role` key, atau credential ra
 Repository: https://github.com/enzywayan-web/flutter_ui_fundamentals
 
 NIM: [2415051070]
-Nama: [Ni Wayan Enzy Araintini]
+Nama: [Ni Wayan Enzy Ariantini]
 Mata Kuliah: Pemrograman Berbasis Mobile
