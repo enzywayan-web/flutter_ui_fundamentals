@@ -1,3 +1,6 @@
+import 'rls_permission_demo.dart';
+import 'json_mapping_error_demo.dart';
+import 'debugging_404_demo.dart';
 import 'favorites_page.dart';
 import 'value_notifier_demo.dart';
 import 'course_state_demo.dart';
@@ -5,7 +8,6 @@ import 'course_model_demo.dart';
 import 'widgets/error_view.dart';
 import 'screens/create_course_screen.dart';
 import 'screens/edit_course_screen.dart';
-
 import 'models/course.dart';
 import 'services/course_supabase_service.dart';
 import 'repositories/course_repository.dart';
@@ -20,18 +22,15 @@ const String studentId = '2415051070';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   // Inisialisasi Supabase
   await Supabase.initialize(
     url: SupabaseConfig.supabaseUrl,
     publishableKey: SupabaseConfig.publishableKey,
   );
-
   // Perakitan repository menggunakan CourseSupabaseService
   final repository = CourseRepository(
     CourseSupabaseService(),
   );
-
   runApp(
     ChangeNotifierProvider(
       create: (_) =>
@@ -44,7 +43,6 @@ Future<void> main() async {
 // =====================================================
 // APP
 // =====================================================
-
 class CourseExplorerApp extends StatelessWidget {
   const CourseExplorerApp({super.key});
 
@@ -70,7 +68,6 @@ class CourseExplorerApp extends StatelessWidget {
 // =====================================================
 // DATA COURSE
 // =====================================================
-
 final List<Map<String, dynamic>> courses = [
   {
     'name': 'Pemrograman Mobile',
@@ -113,7 +110,6 @@ final List<Map<String, dynamic>> courses = [
 // =====================================================
 // RESPONSIVE SHELL
 // =====================================================
-
 class ResponsiveShell extends StatefulWidget {
   const ResponsiveShell({super.key});
 
@@ -130,12 +126,14 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
       const HomePage(),
       const CoursesPage(),
       const ProfilePage(),
+      const Debugging404Demo(),
+      const JsonMappingErrorDemo(),
+      const RlsPermissionDemo(),
     ];
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final expanded = constraints.maxWidth >= 840;
-
         if (expanded) {
           return Scaffold(
             body: Row(
@@ -162,6 +160,21 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
                       selectedIcon: Icon(Icons.person),
                       label: Text('Profile'),
                     ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.bug_report_outlined),
+                      selectedIcon: Icon(Icons.bug_report),
+                      label: Text('Debugging'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.data_object_outlined),
+                      selectedIcon: Icon(Icons.data_object),
+                      label: Text('JSON Test'),
+                    ),
+                    NavigationRailDestination(
+                      icon: Icon(Icons.security_outlined),
+                      selectedIcon: Icon(Icons.security),
+                      label: Text('RLS Test'),
+                    ),
                   ],
                 ),
                 const VerticalDivider(width: 1),
@@ -177,7 +190,6 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
             ),
           );
         }
-
         return Scaffold(
           appBar: AppBar(
             title: const Text('Course Data Manager'),
@@ -201,6 +213,18 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
                 icon: Icon(Icons.person_outline),
                 label: 'Profile',
               ),
+              NavigationDestination(
+                icon: Icon(Icons.bug_report_outlined),
+                label: 'Debugging',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.data_object_outlined),
+                label: 'JSON Test',
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.security_outlined),
+                label: 'RLS Test',
+              ),
             ],
           ),
         );
@@ -212,7 +236,6 @@ class _ResponsiveShellState extends State<ResponsiveShell> {
 // =====================================================
 // REUSABLE IDENTITY CARD
 // =====================================================
-
 class IdentityCard extends StatelessWidget {
   const IdentityCard({super.key});
 
@@ -256,7 +279,6 @@ class IdentityCard extends StatelessWidget {
 // =====================================================
 // HOME PAGE - LOCAL STATE
 // =====================================================
-
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
@@ -428,7 +450,6 @@ class _HomePageState extends State<HomePage> {
 // =====================================================
 // COURSES PAGE
 // =====================================================
-
 class CoursesPage extends StatefulWidget {
   const CoursesPage({super.key});
 
@@ -449,7 +470,6 @@ class _CoursesPageState extends State<CoursesPage> {
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<app_provider.CourseProvider>();
-
     return Column(
       children: [
         Card(
@@ -469,7 +489,6 @@ class _CoursesPageState extends State<CoursesPage> {
           child: LayoutBuilder(
             builder: (context, constraints) {
               final bool isCompact = constraints.maxWidth < 600;
-
               if (isCompact) {
                 return ListView.builder(
                   padding: const EdgeInsets.all(16),
@@ -477,7 +496,6 @@ class _CoursesPageState extends State<CoursesPage> {
                   itemBuilder: (context, index) {
                     final course = courses[index];
                     final String code = course['code'].toString();
-
                     return Padding(
                       padding: const EdgeInsets.only(bottom: 12),
                       child: CourseCard(
@@ -492,10 +510,8 @@ class _CoursesPageState extends State<CoursesPage> {
                   },
                 );
               }
-
               final int columnCount =
                   constraints.maxWidth >= 840 ? 3 : 2;
-
               return GridView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: courses.length,
@@ -509,7 +525,6 @@ class _CoursesPageState extends State<CoursesPage> {
                 itemBuilder: (context, index) {
                   final course = courses[index];
                   final String code = course['code'].toString();
-
                   return CourseCard(
                     course: course,
                     isFavorite: provider.favorites.contains(code),
@@ -531,7 +546,6 @@ class _CoursesPageState extends State<CoursesPage> {
 // =====================================================
 // REUSABLE COURSE CARD
 // =====================================================
-
 class CourseCard extends StatelessWidget {
   final Map<String, dynamic> course;
   final bool isFavorite;
@@ -628,7 +642,6 @@ class CourseCard extends StatelessWidget {
 // =====================================================
 // COURSE DETAIL PAGE
 // =====================================================
-
 class CourseDetailPage extends StatelessWidget {
   final Map<String, dynamic> course;
 
@@ -705,7 +718,6 @@ class CourseDetailPage extends StatelessWidget {
 // =====================================================
 // PROFILE + FORM VALIDATION
 // =====================================================
-
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
 
@@ -715,7 +727,6 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
   late final TextEditingController namaController;
   late final TextEditingController nimController;
   final TextEditingController komentarController =
@@ -740,7 +751,6 @@ class _ProfilePageState extends State<ProfilePage> {
     if (!formKey.currentState!.validate()) {
       return;
     }
-
     showDialog(
       context: context,
       builder: (context) {
@@ -861,7 +871,6 @@ class _ProfilePageState extends State<ProfilePage> {
 // =====================================================
 // ABOUT PAGE
 // =====================================================
-
 class AboutPage extends StatelessWidget {
   const AboutPage({super.key});
 
@@ -913,7 +922,6 @@ class AboutPage extends StatelessWidget {
 // =====================================================
 // COURSE PROVIDER DEMO WIDGET
 // =====================================================
-
 class CourseProviderDemo extends StatefulWidget {
   const CourseProviderDemo({super.key});
 
@@ -952,16 +960,11 @@ class _CourseProviderDemoState extends State<CourseProviderDemo> {
         );
       },
     );
-
     if (confirmed != true || !context.mounted) return;
-
     final provider = context.read<app_provider.CourseProvider>();
-
     try {
       await provider.deleteCourse(course);
-
       if (!context.mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('Mata kuliah berhasil dihapus'),
@@ -969,7 +972,6 @@ class _CourseProviderDemoState extends State<CourseProviderDemo> {
       );
     } catch (e) {
       if (!context.mounted) return;
-
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Gagal menghapus mata kuliah: $e'),
@@ -1008,14 +1010,12 @@ class _CourseProviderDemoState extends State<CourseProviderDemo> {
                     child: CircularProgressIndicator(),
                   );
                 }
-
                 if (provider.error != null) {
                   return ErrorView(
                     message: provider.error!,
                     onRetry: provider.loadCourses,
                   );
                 }
-
                 if (provider.courses.isEmpty) {
                   return const Center(
                     child: Padding(
@@ -1027,7 +1027,6 @@ class _CourseProviderDemoState extends State<CourseProviderDemo> {
                     ),
                   );
                 }
-
                 return Column(
                   children: provider.courses.map((course) {
                     return ListTile(
@@ -1054,7 +1053,6 @@ class _CourseProviderDemoState extends State<CourseProviderDemo> {
                                 );
                                 return;
                               }
-
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -1099,7 +1097,6 @@ class FavoriteCount extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final count = context.watch<app_provider.CourseProvider>().favorites.length;
-
     return Text('Jumlah mata kuliah favorit: $count');
   }
 }

@@ -37,6 +37,21 @@ class CourseProvider extends ChangeNotifier {
       throw Exception('Penyimpanan sedang berlangsung.');
     }
 
+    // Periksa kode duplikat pada data yang sudah dimuat.
+    final normalizedCode = course.code.trim().toLowerCase();
+
+    final isDuplicate = courses.any(
+      (existingCourse) =>
+          existingCourse.code.trim().toLowerCase() ==
+          normalizedCode,
+    );
+
+    if (isDuplicate) {
+      throw Exception(
+        'Kode mata kuliah ${course.code.trim()} sudah digunakan.',
+      );
+    }
+
     isSaving = true;
     notifyListeners();
 
@@ -72,23 +87,23 @@ class CourseProvider extends ChangeNotifier {
   }
 
   // DELETE data mata kuliah
- Future<void> deleteCourse(Course course) async {
-  final id = course.id;
+  Future<void> deleteCourse(Course course) async {
+    final id = course.id;
 
-  if (id == null || isSaving) return;
+    if (id == null || isSaving) return;
 
-  isSaving = true;
-  notifyListeners();
-
-  try {
-    await repository.deleteCourse(id);
-    favorites.remove(course.code);
-    await loadCourses();
-  } finally {
-    isSaving = false;
+    isSaving = true;
     notifyListeners();
+
+    try {
+      await repository.deleteCourse(id);
+      favorites.remove(course.code);
+      await loadCourses();
+    } finally {
+      isSaving = false;
+      notifyListeners();
+    }
   }
-}
 
   // Mengatur mata kuliah favorit
   void toggleFavorite(String id) {
