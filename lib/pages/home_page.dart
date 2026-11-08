@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
-import '../widgets/role_guard.dart';
+import '../services/kos_service.dart';
 import 'login_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,6 +29,42 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Fungsi untuk menguji keamanan RLS (Praktik 6)
+  void _testSecurity(BuildContext context) async {
+    // ID Kos A sudah dimasukkan di sini
+    const kosIdA = 'c9d72b10-c67f-4c9f-8880-685f0018c13a'; 
+
+    final kosService = KosService();
+    
+    // Mencoba mengubah nama kos milik Owner A
+    final updateSuccess = await kosService.update(kosIdA, {'name': 'DIHACK OWNER B'});
+    
+    // Mencoba menghapus kos milik Owner A
+    final deleteSuccess = await kosService.delete(kosIdA);
+
+    if (!context.mounted) return;
+    
+    // Tampilkan hasil di layar (Pop-up)
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Hasil Uji Keamanan'),
+        content: Text(
+          'Mencoba mengubah/menghapus data Owner A:\n\n'
+          'Update: $updateSuccess\n'
+          'Delete: $deleteSuccess',
+          style: const TextStyle(fontSize: 16),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Tutup'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -48,20 +84,8 @@ class _HomePageState extends State<HomePage> {
           if (snapshot.connectionState != ConnectionState.done) {
             return const Center(child: CircularProgressIndicator());
           }
-          
-          // JIKA ERROR, KITA TAMPILKAN PESAN ASLINYA DI SINI
-          if (snapshot.hasError) {
-            return Center(
-              child: Text(
-                'Error: ${snapshot.error}',
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.red),
-              ),
-            );
-          }
-
-          if (snapshot.data == null) {
-            return const Center(child: Text('Data profil kosong di database'));
+          if (snapshot.hasError || snapshot.data == null) {
+            return const Center(child: Text('Gagal memuat profil'));
           }
 
           final profile = snapshot.data!;
@@ -71,48 +95,33 @@ class _HomePageState extends State<HomePage> {
               ListTile(
                 leading: const Icon(Icons.person),
                 title: Text(profile.name.isEmpty ? profile.email : profile.name),
-                subtitle: Text('${profile.email}\n${profile.role}'),
+                subtitle: Text('${profile.email} • ${profile.role}'),
               ),
               const Divider(),
               const ListTile(
                 leading: Icon(Icons.list),
                 title: Text('Daftar Kos'),
               ),
-              
-              // Menu ini HANYA muncul jika role-nya owner atau admin
               if (profile.isOwner || profile.isAdmin)
                 const ListTile(
                   leading: Icon(Icons.home_work),
                   title: Text('My Kos'),
                 ),
-              
-              // Menu ini HANYA muncul jika role-nya admin
               if (profile.isAdmin)
                 const ListTile(
                   leading: Icon(Icons.admin_panel_settings),
                   title: Text('Kelola Data (Admin)'),
                 ),
+              
+              // TOMBOL UJI HACK UNTUK PRAKTIK 6
+              const Divider(),
+              ListTile(
+                leading: const Icon(Icons.security, color: Colors.red),
+                title: const Text('UJI HACK (Praktik 6)', style: TextStyle(color: Colors.red)),
+                subtitle: const Text('Klik untuk mencoba merusak data Owner A'),
+                onTap: () => _testSecurity(context),
+              ),
             ],
-          );
-        },
-      ),
-
-      // TOMBOL TAMBAH KOS (Hanya muncul untuk owner/admin)
-      floatingActionButton: FutureBuilder<UserProfile?>(
-        future: _profileFuture,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return const SizedBox();
-          final profile = snapshot.data!;
-          return RoleGuard(
-            role: profile.role,
-            allowed: const ['owner', 'admin'],
-            child: FloatingActionButton.extended(
-              onPressed: () {
-                // TODO: buka halaman Add Kos
-              },
-              icon: const Icon(Icons.add_home),
-              label: const Text('Tambah Kos'),
-            ),
           );
         },
       ),
