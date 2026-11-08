@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
+import '../widgets/role_guard.dart';
 import 'login_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -69,20 +70,49 @@ class _HomePageState extends State<HomePage> {
             children: [
               ListTile(
                 leading: const Icon(Icons.person),
-                title: const Text('Nama'),
-                subtitle: Text(profile.name.isEmpty ? '-' : profile.name),
+                title: Text(profile.name.isEmpty ? profile.email : profile.name),
+                subtitle: Text('${profile.email}\n${profile.role}'),
               ),
-              ListTile(
-                leading: const Icon(Icons.email),
-                title: const Text('Email'),
-                subtitle: Text(profile.email),
+              const Divider(),
+              const ListTile(
+                leading: Icon(Icons.list),
+                title: Text('Daftar Kos'),
               ),
-              ListTile(
-                leading: const Icon(Icons.badge),
-                title: const Text('Role'),
-                subtitle: Text(profile.role),
-              ),
+              
+              // Menu ini HANYA muncul jika role-nya owner atau admin
+              if (profile.isOwner || profile.isAdmin)
+                const ListTile(
+                  leading: Icon(Icons.home_work),
+                  title: Text('My Kos'),
+                ),
+              
+              // Menu ini HANYA muncul jika role-nya admin
+              if (profile.isAdmin)
+                const ListTile(
+                  leading: Icon(Icons.admin_panel_settings),
+                  title: Text('Kelola Data (Admin)'),
+                ),
             ],
+          );
+        },
+      ),
+
+      // TOMBOL TAMBAH KOS (Hanya muncul untuk owner/admin)
+      floatingActionButton: FutureBuilder<UserProfile?>(
+        future: _profileFuture,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return const SizedBox();
+          final profile = snapshot.data!;
+          return RoleGuard(
+            role: profile.role,
+            allowed: const ['owner', 'admin'],
+            child: FloatingActionButton.extended(
+              onPressed: () {
+                // TODO: buka halaman Add Kos
+              },
+              icon: const Icon(Icons.add_home),
+              label: const Text('Tambah Kos'),
+            ),
           );
         },
       ),
