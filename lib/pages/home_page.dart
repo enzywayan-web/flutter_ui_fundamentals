@@ -1,37 +1,90 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'login_page.dart'; // Penting: agar bisa kembali ke halaman login
+import '../services/profile_service.dart';
+import 'login_page.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = AuthService.instance.currentUser;
+  State<HomePage> createState() => _HomePageState();
+}
 
+class _HomePageState extends State<HomePage> {
+  late final Future<UserProfile?> _profileFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _profileFuture = ProfileService().getMyProfile();
+  }
+
+  Future<void> _logout() async {
+    await AuthService.instance.logout();
+    if (!mounted) return;
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+      (route) => false,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('KosFinder'),
         actions: [
-          // INI DIA TOMBOL LOGOUT (PANAH KELUAR) YANG DIMAKSUD
           IconButton(
             tooltip: 'Logout',
-            icon: const Icon(Icons.logout), 
-            onPressed: () async {
-              await AuthService.instance.logout(); // Menghapus session
-              if (!context.mounted) return;
-              
-              // Kembali ke halaman Login dan hapus semua history
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (context) => const LoginPage()),
-                (route) => false,
-              );
-            },
+            icon: const Icon(Icons.logout),
+            onPressed: _logout,
           ),
         ],
       ),
-      body: Center(
-        child: Text('Login sebagai: ${user?.email ?? 'Tidak diketahui'}'),
+      body: FutureBuilder<UserProfile?>(
+        future: _profileFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          
+          // JIKA ERROR, KITA TAMPILKAN PESAN ASLINYA DI SINI
+          if (snapshot.hasError) {
+            return Center(
+              child: Text(
+                'Error: ${snapshot.error}',
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.red),
+              ),
+            );
+          }
+
+          if (snapshot.data == null) {
+            return const Center(child: Text('Data profil kosong di database'));
+          }
+
+          final profile = snapshot.data!;
+
+          return ListView(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.person),
+                title: const Text('Nama'),
+                subtitle: Text(profile.name.isEmpty ? '-' : profile.name),
+              ),
+              ListTile(
+                leading: const Icon(Icons.email),
+                title: const Text('Email'),
+                subtitle: Text(profile.email),
+              ),
+              ListTile(
+                leading: const Icon(Icons.badge),
+                title: const Text('Role'),
+                subtitle: Text(profile.role),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

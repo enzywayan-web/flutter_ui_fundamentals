@@ -15,6 +15,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailC = TextEditingController();
   final _passC = TextEditingController();
   final _confirmC = TextEditingController();
+  final _nameC = TextEditingController(); // Baru
+  String _role = 'seeker'; // Baru
   bool _loading = false;
 
   @override
@@ -22,6 +24,7 @@ class _RegisterPageState extends State<RegisterPage> {
     _emailC.dispose();
     _passC.dispose();
     _confirmC.dispose();
+    _nameC.dispose();
     super.dispose();
   }
 
@@ -37,17 +40,17 @@ class _RegisterPageState extends State<RegisterPage> {
       final res = await AuthService.instance.register(
         email: _emailC.text.trim(),
         password: _passC.text,
+        name: _nameC.text.trim(),
+        role: _role,
       );
       if (!mounted) return;
 
       if (res.session != null) {
-        // Konfirmasi email nonaktif: user langsung login -> ke Home.
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const HomePage()),
           (route) => false,
         );
       } else {
-        // Konfirmasi email aktif: minta user cek email.
         _showMessage('Registrasi berhasil. Silakan cek email Anda.');
         Navigator.of(context).pop();
       }
@@ -70,6 +73,15 @@ class _RegisterPageState extends State<RegisterPage> {
           key: _formKey,
           child: ListView(
             children: [
+              TextFormField(
+                controller: _nameC,
+                decoration: const InputDecoration(labelText: 'Nama'),
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return 'Nama wajib diisi';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 12),
               TextFormField(
                 controller: _emailC,
                 keyboardType: TextInputType.emailAddress,
@@ -98,6 +110,16 @@ class _RegisterPageState extends State<RegisterPage> {
                 decoration: const InputDecoration(labelText: 'Konfirmasi Password'),
                 validator: (v) =>
                     v != _passC.text ? 'Password tidak sama' : null,
+              ),
+              const SizedBox(height: 12),
+              DropdownButtonFormField<String>(
+                value: _role,
+                decoration: const InputDecoration(labelText: 'Daftar sebagai'),
+                items: const [
+                  DropdownMenuItem(value: 'seeker', child: Text('Pencari Kos')),
+                  DropdownMenuItem(value: 'owner', child: Text('Pemilik Kos')),
+                ],
+                onChanged: (v) => setState(() => _role = v ?? 'seeker'),
               ),
               const SizedBox(height: 24),
               FilledButton(
