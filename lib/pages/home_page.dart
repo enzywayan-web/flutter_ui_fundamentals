@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../services/kos_service.dart';
+import '../services/notification_service.dart'; // Tambahan
 import 'login_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,6 +19,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _profileFuture = ProfileService().getMyProfile();
+    
+    // Memanggil inisialisasi notifikasi saat Home terbuka
+    NotificationService.instance.init();
   }
 
   Future<void> _logout() async {
@@ -29,40 +33,45 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Fungsi untuk menguji keamanan RLS (Praktik 6)
   void _testSecurity(BuildContext context) async {
-    // ID Kos A sudah dimasukkan di sini
-    const kosIdA = 'c9d72b10-c67f-4c9f-8880-685f0018c13a'; 
+    const kosId = 'MASUKKAN_ID_KOS_DISINI'; 
 
-    final kosService = KosService();
-    
-    // Mencoba mengubah nama kos milik Owner A
-    final updateSuccess = await kosService.update(kosIdA, {'name': 'DIHACK OWNER B'});
-    
-    // Mencoba menghapus kos milik Owner A
-    final deleteSuccess = await kosService.delete(kosIdA);
+    try {
+      final kosService = KosService();
+      final updateSuccess = await kosService.update(kosId, {'name': 'Kos Berhasil Diedit'});
+      final deleteSuccess = await kosService.delete(kosId);
 
-    if (!context.mounted) return;
-    
-    // Tampilkan hasil di layar (Pop-up)
-    showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Hasil Uji Keamanan'),
-        content: Text(
-          'Mencoba mengubah/menghapus data Owner A:\n\n'
-          'Update: $updateSuccess\n'
-          'Delete: $deleteSuccess',
-          style: const TextStyle(fontSize: 16),
+      if (!context.mounted) return;
+      
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Hasil Uji Keamanan'),
+          content: Text('Update: $updateSuccess\nDelete: $deleteSuccess'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Tutup'),
+            ),
+          ],
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Tutup'),
-          ),
-        ],
-      ),
-    );
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Error'),
+          content: Text('Pesan: $e'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Tutup'),
+            ),
+          ],
+        ),
+      );
+    }
   }
 
   @override
@@ -107,18 +116,12 @@ class _HomePageState extends State<HomePage> {
                   leading: Icon(Icons.home_work),
                   title: Text('My Kos'),
                 ),
-              if (profile.isAdmin)
-                const ListTile(
-                  leading: Icon(Icons.admin_panel_settings),
-                  title: Text('Kelola Data (Admin)'),
-                ),
               
-              // TOMBOL UJI HACK UNTUK PRAKTIK 6
+              // TOMBOL UJI HACK (Untuk Praktik 6)
               const Divider(),
               ListTile(
                 leading: const Icon(Icons.security, color: Colors.red),
                 title: const Text('UJI HACK (Praktik 6)', style: TextStyle(color: Colors.red)),
-                subtitle: const Text('Klik untuk mencoba merusak data Owner A'),
                 onTap: () => _testSecurity(context),
               ),
             ],

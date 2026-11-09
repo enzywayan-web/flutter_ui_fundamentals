@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "52716755610",
+    "project_id": "kosworksheet9",
+    "storage_bucket": "kosworksheet9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:52716755610:android:b06215d5845fc6adffdd23",
+        "android_client_info": {
+          "package_name": "com.example.flutter_ui_fundamentals"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKVYIHo57hBS0hs4xN90nmpgIpijtnDqU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
