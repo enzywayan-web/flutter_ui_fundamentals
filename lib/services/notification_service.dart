@@ -1,3 +1,4 @@
+
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -27,18 +28,21 @@ class NotificationService {
     // 2. Minta izin notifikasi
     await requestPermission();
 
-    // 3. Dapatkan FCM Token
-    final token = await _messaging.getToken();
+    // 3. Mendapatkan FCM Token
+    await getToken();
 
-    debugPrint('=== FCM Token: $token ===');
+    // 4. Mendengarkan perubahan token
+    listenTokenRefresh((newToken) {
+      debugPrint('Token terbaru diterima');
+    });
 
-    // 4. Dengarkan pesan ketika aplikasi terbuka
+    // 5. Mendengarkan pesan ketika aplikasi terbuka
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('=== NOTIFIKASI DITERIMA ===');
       debugPrint('Title: ${message.notification?.title}');
       debugPrint('Body: ${message.notification?.body}');
 
-      // 5. Tampilkan notifikasi lokal
+      // 6. Menampilkan notifikasi lokal
       if (message.notification != null) {
         _localNotifications.show(
           DateTime.now().millisecondsSinceEpoch.remainder(100000),
@@ -57,7 +61,7 @@ class NotificationService {
     });
   }
 
-  // Method baru untuk meminta izin notifikasi
+  // Method untuk meminta izin notifikasi
   Future<AuthorizationStatus> requestPermission() async {
     final settings = await _messaging.requestPermission(
       alert: true,
@@ -70,5 +74,22 @@ class NotificationService {
     );
 
     return settings.authorizationStatus;
+  }
+
+  // Praktik 9: Mendapatkan FCM Token
+  Future<String?> getToken() async {
+    final token = await _messaging.getToken();
+
+    debugPrint('FCM Token: $token');
+
+    return token;
+  }
+
+  // Praktik 9: Mendengarkan perubahan token
+  void listenTokenRefresh(void Function(String token) onRefresh) {
+    _messaging.onTokenRefresh.listen((newToken) {
+      debugPrint('FCM Token diperbarui');
+      onRefresh(newToken);
+    });
   }
 }
