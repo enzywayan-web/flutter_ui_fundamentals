@@ -1,8 +1,11 @@
+
 import 'package:flutter/material.dart';
+
 import '../services/auth_service.dart';
 import '../services/profile_service.dart';
 import '../services/kos_service.dart';
-import '../services/notification_service.dart'; // Tambahan
+import '../services/notification_service.dart';
+
 import 'login_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -18,39 +21,49 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
+
     _profileFuture = ProfileService().getMyProfile();
-    
-    // Memanggil inisialisasi notifikasi saat Home terbuka
+
+    // Inisialisasi layanan notifikasi.
+    // Permission dan FCM Token sudah ditangani di dalam init().
     NotificationService.instance.init();
-    
-    // Jika ingin memanggil requestPermission secara terpisah sesuai instruksi:
-    NotificationService.instance.requestPermission();
   }
 
   Future<void> _logout() async {
     await AuthService.instance.logout();
+
     if (!mounted) return;
+
     Navigator.of(context).pushAndRemoveUntil(
-      MaterialPageRoute(builder: (context) => const LoginPage()),
+      MaterialPageRoute(
+        builder: (context) => const LoginPage(),
+      ),
       (route) => false,
     );
   }
 
   void _testSecurity(BuildContext context) async {
-    const kosId = 'MASUKKAN_ID_KOS_DISINI'; 
+    const kosId = 'MASUKKAN_ID_KOS_DISINI';
 
     try {
       final kosService = KosService();
-      final updateSuccess = await kosService.update(kosId, {'name': 'Kos Berhasil Diedit'});
+
+      final updateSuccess = await kosService.update(
+        kosId,
+        {'name': 'Kos Berhasil Diedit'},
+      );
+
       final deleteSuccess = await kosService.delete(kosId);
 
       if (!context.mounted) return;
-      
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('Hasil Uji Keamanan'),
-          content: Text('Update: $updateSuccess\nDelete: $deleteSuccess'),
+          content: Text(
+            'Update: $updateSuccess\nDelete: $deleteSuccess',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
@@ -61,6 +74,7 @@ class _HomePageState extends State<HomePage> {
       );
     } catch (e) {
       if (!context.mounted) return;
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -94,10 +108,15 @@ class _HomePageState extends State<HomePage> {
         future: _profileFuture,
         builder: (context, snapshot) {
           if (snapshot.connectionState != ConnectionState.done) {
-            return const Center(child: CircularProgressIndicator());
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           }
+
           if (snapshot.hasError || snapshot.data == null) {
-            return const Center(child: Text('Gagal memuat profil'));
+            return const Center(
+              child: Text('Gagal memuat profil'),
+            );
           }
 
           final profile = snapshot.data!;
@@ -106,26 +125,44 @@ class _HomePageState extends State<HomePage> {
             children: [
               ListTile(
                 leading: const Icon(Icons.person),
-                title: Text(profile.name.isEmpty ? profile.email : profile.name),
-                subtitle: Text('${profile.email}\n${profile.role}'),
+                title: Text(
+                  profile.name.isEmpty
+                      ? profile.email
+                      : profile.name,
+                ),
+                subtitle: Text(
+                  '${profile.email}\n${profile.role}',
+                ),
               ),
+
               const Divider(),
+
               const ListTile(
                 leading: Icon(Icons.list),
                 title: Text('Daftar Kos'),
               ),
+
               if (profile.isOwner || profile.isAdmin)
                 const ListTile(
                   leading: Icon(Icons.home_work),
                   title: Text('My Kos'),
                 ),
-              
-              // TOMBOL UJI HACK (Untuk Praktik 6)
+
+              // Tombol pengujian keamanan Praktik 6.
               const Divider(),
+
               ListTile(
-                leading: const Icon(Icons.security, color: Colors.red),
-                title: const Text('UJI HACK (Praktik 6)', style: TextStyle(color: Colors.red)),
-                subtitle: const Text('Klik untuk menguji izin edit/hapus'),
+                leading: const Icon(
+                  Icons.security,
+                  color: Colors.red,
+                ),
+                title: const Text(
+                  'UJI HACK (Praktik 6)',
+                  style: TextStyle(color: Colors.red),
+                ),
+                subtitle: const Text(
+                  'Klik untuk menguji izin edit/hapus',
+                ),
                 onTap: () => _testSecurity(context),
               ),
             ],

@@ -1,21 +1,53 @@
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
+import '../firebase_options.dart';
+
+// ==========================================
+// PRAKTIK 10: BACKGROUND NOTIFICATION HANDLER
+// Fungsi harus berada di luar class
+// ==========================================
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(
+  RemoteMessage message,
+) async {
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  debugPrint(
+    '[BACKGROUND] ${message.notification?.title}',
+  );
+
+  debugPrint(
+    '[BACKGROUND] ${message.notification?.body}',
+  );
+}
+
+// ==========================================
+// NOTIFICATION SERVICE
+// ==========================================
+
 class NotificationService {
   NotificationService._();
 
-  static final NotificationService instance = NotificationService._();
+  static final NotificationService instance =
+      NotificationService._();
 
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
+  final FirebaseMessaging _messaging =
+      FirebaseMessaging.instance;
 
   final FlutterLocalNotificationsPlugin _localNotifications =
       FlutterLocalNotificationsPlugin();
 
   Future<void> init() async {
     // 1. Inisialisasi Local Notification
-    const AndroidInitializationSettings initializationSettingsAndroid =
+    const AndroidInitializationSettings
+        initializationSettingsAndroid =
         AndroidInitializationSettings('@mipmap/ic_launcher');
 
     const InitializationSettings initializationSettings =
@@ -23,9 +55,11 @@ class NotificationService {
       android: initializationSettingsAndroid,
     );
 
-    await _localNotifications.initialize(initializationSettings);
+    await _localNotifications.initialize(
+      initializationSettings,
+    );
 
-    // 2. Minta izin notifikasi
+    // 2. Meminta izin notifikasi
     await requestPermission();
 
     // 3. Mendapatkan FCM Token
@@ -36,18 +70,43 @@ class NotificationService {
       debugPrint('Token terbaru diterima');
     });
 
-    // 5. Mendengarkan pesan ketika aplikasi terbuka
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      debugPrint('=== NOTIFIKASI DITERIMA ===');
-      debugPrint('Title: ${message.notification?.title}');
-      debugPrint('Body: ${message.notification?.body}');
+    // 5. Pengaturan notifikasi foreground untuk iOS
+    await _messaging.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
 
-      // 6. Menampilkan notifikasi lokal
-      if (message.notification != null) {
+    // 6. FOREGROUND: Aplikasi sedang terbuka
+    FirebaseMessaging.onMessage.listen(
+      (RemoteMessage message) {
+        debugPrint('[FOREGROUND] Notification received');
+
+        debugPrint(
+          'Title: ${message.notification?.title}',
+        );
+
+        debugPrint(
+          'Body: ${message.notification?.body}',
+        );
+
+        debugPrint(
+          'Data: ${message.data}',
+        );
+
+        // Menampilkan notifikasi lokal ketika aplikasi terbuka
+        final title =
+            message.notification?.title ?? 'Notifikasi';
+
+        final body =
+            message.notification?.body ?? '';
+
         _localNotifications.show(
-          DateTime.now().millisecondsSinceEpoch.remainder(100000),
-          message.notification!.title,
-          message.notification!.body,
+          DateTime.now()
+              .millisecondsSinceEpoch
+              .remainder(100000),
+          title,
+          body,
           const NotificationDetails(
             android: AndroidNotificationDetails(
               'kosfinder_channel',
@@ -57,11 +116,14 @@ class NotificationService {
             ),
           ),
         );
-      }
-    });
+      },
+    );
   }
 
-  // Method untuk meminta izin notifikasi
+  // ==========================================
+  // PRAKTIK 8: NOTIFICATION PERMISSION
+  // ==========================================
+
   Future<AuthorizationStatus> requestPermission() async {
     final settings = await _messaging.requestPermission(
       alert: true,
@@ -70,13 +132,17 @@ class NotificationService {
     );
 
     debugPrint(
-      'Notification permission: ${settings.authorizationStatus.name}',
+      'Notification permission: '
+      '${settings.authorizationStatus.name}',
     );
 
     return settings.authorizationStatus;
   }
 
-  // Praktik 9: Mendapatkan FCM Token
+  // ==========================================
+  // PRAKTIK 9: MENDAPATKAN FCM TOKEN
+  // ==========================================
+
   Future<String?> getToken() async {
     final token = await _messaging.getToken();
 
@@ -85,10 +151,13 @@ class NotificationService {
     return token;
   }
 
-  // Praktik 9: Mendengarkan perubahan token
-  void listenTokenRefresh(void Function(String token) onRefresh) {
+  // Mendengarkan perubahan token
+  void listenTokenRefresh(
+    void Function(String token) onRefresh,
+  ) {
     _messaging.onTokenRefresh.listen((newToken) {
       debugPrint('FCM Token diperbarui');
+
       onRefresh(newToken);
     });
   }
