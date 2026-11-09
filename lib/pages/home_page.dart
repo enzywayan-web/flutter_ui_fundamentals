@@ -22,6 +22,9 @@ class _HomePageState extends State<HomePage> {
     
     // Memanggil inisialisasi notifikasi saat Home terbuka
     NotificationService.instance.init();
+    
+    // Jika ingin memanggil requestPermission secara terpisah sesuai instruksi:
+    NotificationService.instance.requestPermission();
   }
 
   Future<void> _logout() async {
@@ -104,7 +107,7 @@ class _HomePageState extends State<HomePage> {
               ListTile(
                 leading: const Icon(Icons.person),
                 title: Text(profile.name.isEmpty ? profile.email : profile.name),
-                subtitle: Text('${profile.email} • ${profile.role}'),
+                subtitle: Text('${profile.email}\n${profile.role}'),
               ),
               const Divider(),
               const ListTile(
@@ -122,6 +125,7 @@ class _HomePageState extends State<HomePage> {
               ListTile(
                 leading: const Icon(Icons.security, color: Colors.red),
                 title: const Text('UJI HACK (Praktik 6)', style: TextStyle(color: Colors.red)),
+                subtitle: const Text('Klik untuk menguji izin edit/hapus'),
                 onTap: () => _testSecurity(context),
               ),
             ],

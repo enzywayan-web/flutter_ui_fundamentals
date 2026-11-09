@@ -1,4 +1,3 @@
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -26,15 +25,7 @@ class NotificationService {
     await _localNotifications.initialize(initializationSettings);
 
     // 2. Minta izin notifikasi
-    final settings = await _messaging.requestPermission(
-      alert: true,
-      badge: true,
-      sound: true,
-    );
-
-    debugPrint(
-      'Notification permission: ${settings.authorizationStatus.name}',
-    );
+    await requestPermission();
 
     // 3. Dapatkan FCM Token
     final token = await _messaging.getToken();
@@ -64,5 +55,20 @@ class NotificationService {
         );
       }
     });
+  }
+
+  // Method baru untuk meminta izin notifikasi
+  Future<AuthorizationStatus> requestPermission() async {
+    final settings = await _messaging.requestPermission(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
+    debugPrint(
+      'Notification permission: ${settings.authorizationStatus.name}',
+    );
+
+    return settings.authorizationStatus;
   }
 }
